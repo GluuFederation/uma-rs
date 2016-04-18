@@ -3,6 +3,7 @@ package org.xdi.oxd.rs.protect;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
 import org.slf4j.Logger;
@@ -65,5 +66,20 @@ public class Jackson {
      */
     public static ObjectMapper createJsonMapper() {
         return JacksonMapperHolder.MAPPER;
+    }
+
+    public static String asPrettyJson(Object p_object) throws IOException {
+        final ObjectMapper mapper = createJsonMapper().configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, false);
+        final ObjectWriter writer = mapper.writer().withDefaultPrettyPrinter();
+        return writer.writeValueAsString(p_object);
+    }
+
+    public static String asJsonSilently(Object p_object) {
+        try {
+            return asPrettyJson(p_object);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+            return "";
+        }
     }
 }
