@@ -16,6 +16,7 @@ public class RsProtectorTest {
     @Test
     public void access() throws IOException {
         final RsProtector protector = RsProtector.instance(fileInputStream("simple.json"));
+
         Assert.assertTrue(protector.hasAccess("/photo", "http://photoz.example.com/dev/actions/print"));
         Assert.assertTrue(protector.hasAccess("/photo",  "http://photoz.example.com/dev/actions/print",
                 "http://photoz.example.com/dev/actions/add"));

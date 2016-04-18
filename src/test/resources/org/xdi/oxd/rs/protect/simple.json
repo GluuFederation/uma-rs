@@ -1,16 +1,31 @@
 {"resources":[
     {
-        "id":"/photo",
-        "scopes":[
-            "http://photoz.example.com/dev/actions/print",
-            "http://photoz.example.com/dev/actions/add"
+        "path":"/photo",
+        "conditions":[
+            {
+                "httpMethods":["GET"],
+                "scopes":[
+                    "http://photoz.example.com/dev/actions/view"
+                ]
+            },
+            {
+                "httpMethods":["PUT", "POST"],
+                "scopes":[
+                    "http://photoz.example.com/dev/actions/all",
+                    "http://photoz.example.com/dev/actions/add"
+                ]
+            }
         ]
     },
     {
-        "id":"/document",
-        "scopes":[
-            "http://example.com/dev/actions/remove",
-            "http://example.com/dev/actions/add"
+        "path":"/document",
+        "conditions":[
+            {
+                "httpMethods":["GET"],
+                "scopes":[
+                    "http://photoz.example.com/dev/actions/view"
+                ]
+            }
         ]
     }
 ]

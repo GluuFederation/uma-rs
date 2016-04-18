@@ -17,6 +17,10 @@
         <slf4j.version>1.7.11</slf4j.version>
     </properties>
 
+    <prerequisites>
+        <maven>${maven.min-version}</maven>
+    </prerequisites>
+
     <build>
         <plugins>
             <plugin>

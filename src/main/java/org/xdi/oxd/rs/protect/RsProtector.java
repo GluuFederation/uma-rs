@@ -2,13 +2,11 @@ package org.xdi.oxd.rs.protect;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.apache.commons.io.IOUtils;
-import org.xdi.oxd.common.CoreUtils;
+import com.google.common.io.Closeables;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -25,30 +23,33 @@ public class RsProtector {
         Preconditions.checkNotNull(resourceList);
 
         for (RsResource resource : resourceList) {
-            resourceMap.put(resource.getId(), resource);
+            resourceMap.put(resource.getPath(), resource);
         }
     }
 
     public static RsProtector instance(InputStream inputStream) throws IOException {
         try {
-            final RsResourceList resourceList = CoreUtils.createJsonMapper().readValue(inputStream, RsResourceList.class);
+            final RsResourceList resourceList = Jackson.createJsonMapper().readValue(inputStream, RsResourceList.class);
             return new RsProtector(resourceList.getResources());
         } finally {
-            IOUtils.closeQuietly(inputStream);
+            Closeables.closeQuietly(inputStream);
         }
     }
 
-    public boolean hasAccess(String id, String... scope) {
-        return hasAccess(id, Arrays.asList(scope));
+    public boolean hasAccess(String path, String httpMethod, String... presentScope) {
+        return hasAccess(path, httpMethod, Arrays.asList(presentScope));
     }
 
-    public boolean hasAccess(String id, Collection<String> scope) {
-        Preconditions.checkNotNull(scope);
-        final RsResource rsResource = resourceMap.get(id);
+    public boolean hasAccess(String path, String httpMethod, List<String> presentScopes) {
+        Preconditions.checkNotNull(path);
+        Preconditions.checkNotNull(presentScopes);
+        Preconditions.checkNotNull(httpMethod);
+
+        final RsResource rsResource = resourceMap.get(path);
         if (rsResource != null) {
-            final List<String> scopes = rsResource.getScopes();
-            if (scopes != null) {
-                return scopes.containsAll(scope);
+            final List<String> requiredScopes = rsResource.scopes(httpMethod);
+            if (presentScopes != null) {
+                return requiredScopes.containsAll(presentScopes);
             }
         }
         return false;
