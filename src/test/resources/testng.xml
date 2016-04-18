@@ -1,4 +1,10 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="oxD Protect Suite" parallel="false">
+
+    <test name="Core" enabled="true">
+        <classes>
+            <class name="org.xdi.oxd.rs.protect.RsProtectorTest"/>
+        </classes>
+    </test>
 </suite>
