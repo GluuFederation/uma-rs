@@ -37,6 +37,8 @@ public class RsProtector {
     }
 
     public boolean hasAccess(String path, String httpMethod, String... presentScope) {
+        Preconditions.checkNotNull(presentScope);
+
         return hasAccess(path, httpMethod, Arrays.asList(presentScope));
     }
 
@@ -45,10 +47,12 @@ public class RsProtector {
         Preconditions.checkNotNull(presentScopes);
         Preconditions.checkNotNull(httpMethod);
 
+        Preconditions.checkState(!presentScopes.isEmpty(), "Scopes can't be empty.");
+
         final RsResource rsResource = resourceMap.get(path);
         if (rsResource != null) {
             final List<String> requiredScopes = rsResource.scopes(httpMethod);
-            if (presentScopes != null) {
+            if (requiredScopes != null) {
                 return requiredScopes.containsAll(presentScopes);
             }
         }

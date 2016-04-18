@@ -46,7 +46,7 @@ UMA Resource Server library - helps to easily protect Java based project with UM
  final RsProtector protector = RsProtector.instance(fileInputStream("simple.json"));
 
  // somewhere in http interceptor/filter code
- if (!protector.hasAcess(httpMethod, presentScopes)) {
+ if (!protector.hasAccess(httpMethod, presentScopes)) {
      throw new WebApplicationException(UNAUTHORIZED);
  }
 ```

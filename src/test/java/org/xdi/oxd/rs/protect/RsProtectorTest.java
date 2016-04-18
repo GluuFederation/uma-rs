@@ -1,10 +1,11 @@
 package org.xdi.oxd.rs.protect;
 
-import junit.framework.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import static junit.framework.Assert.*;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -17,13 +18,13 @@ public class RsProtectorTest {
     public void access() throws IOException {
         final RsProtector protector = RsProtector.instance(fileInputStream("simple.json"));
 
-        Assert.assertTrue(protector.hasAccess("/photo", "http://photoz.example.com/dev/actions/print"));
-        Assert.assertTrue(protector.hasAccess("/photo",  "http://photoz.example.com/dev/actions/print",
-                "http://photoz.example.com/dev/actions/add"));
+        assertTrue(protector.hasAccess("/photo", "GET", "http://photoz.example.com/dev/actions/view"));
+        assertTrue(protector.hasAccess("/photo", "PUT", "http://photoz.example.com/dev/actions/add"));
+        assertTrue(protector.hasAccess("/photo", "POST", "http://photoz.example.com/dev/actions/add",
+                "http://photoz.example.com/dev/actions/all"));
 
-        Assert.assertFalse(protector.hasAccess("/photo", "http://photoz.example.com/dev/actions/view"));
-        Assert.assertFalse(protector.hasAccess("/photo", "http://photoz.example.com/dev/actions/print",
-                "http://photoz.example.com/dev/actions/view"));
+        assertFalse(protector.hasAccess("/photo", "GET", "http://photoz.example.com/dev/actions/add"));
+        assertFalse(protector.hasAccess("/photo", "PUT", "http://photoz.example.com/dev/actions/view"));
     }
 
     private InputStream fileInputStream(String fileName) {
