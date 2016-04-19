@@ -29,7 +29,7 @@ public class ServiceProvider {
         return configurationService;
     }
 
-    private synchronized UmaConfiguration getUmaConfiguration() {
+    public synchronized UmaConfiguration getUmaConfiguration() {
         if (umaConfiguration == null) {
             umaConfiguration = getConfigurationService().getMetadataConfiguration();
         }

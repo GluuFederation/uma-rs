@@ -3,6 +3,7 @@ package org.xdi.oxd.rs.protect.resteasy;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.xdi.oxauth.client.uma.wrapper.UmaClient;
+import org.xdi.oxauth.model.uma.UmaConfiguration;
 import org.xdi.oxauth.model.uma.wrapper.Token;
 
 /**
@@ -32,7 +33,9 @@ public class PatProvider {
 
     private void obtainPat() {
         try {
-            patToken = UmaClient.requestPat(null, null, null);
+            UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
+
+            patToken = UmaClient.requestPat(umaConfiguration.getTokenEndpoint(), null, null);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             throw new RuntimeException(e);
