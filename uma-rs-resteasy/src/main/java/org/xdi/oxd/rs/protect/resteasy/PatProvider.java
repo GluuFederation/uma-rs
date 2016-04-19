@@ -1,5 +1,7 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
+import com.google.common.base.Preconditions;
+import org.apache.log4j.Logger;
 import org.xdi.oxauth.client.uma.wrapper.UmaClient;
 import org.xdi.oxauth.model.uma.wrapper.Token;
 
@@ -9,6 +11,8 @@ import org.xdi.oxauth.model.uma.wrapper.Token;
  */
 
 public class PatProvider {
+
+    private static final Logger LOG = Logger.getLogger(PatProvider.class);
 
     private final ServiceProvider serviceProvider;
 
@@ -22,6 +26,7 @@ public class PatProvider {
         if (patToken == null) {
             obtainPat();
         }
+        Preconditions.checkNotNull(patToken);
         return patToken.getAccessToken();
     }
 
@@ -29,7 +34,8 @@ public class PatProvider {
         try {
             patToken = UmaClient.requestPat(null, null, null);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 

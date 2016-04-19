@@ -13,21 +13,33 @@ import org.xdi.oxauth.model.uma.UmaConfiguration;
 public class ServiceProvider {
 
     private final String umaWellknownEndpoint;
+
     private UmaConfiguration umaConfiguration = null;
+    private UmaConfigurationService configurationService = null;
+    private ResourceSetRegistrationService resourceSetRegistrationService = null;
 
     public ServiceProvider(String umaWellknownEndpoint) {
         this.umaWellknownEndpoint = umaWellknownEndpoint;
     }
 
+    public synchronized UmaConfigurationService getConfigurationService() {
+        if (configurationService == null) {
+            configurationService = UmaClientFactory.instance().createMetaDataConfigurationService(umaWellknownEndpoint);
+        }
+        return configurationService;
+    }
+
     private synchronized UmaConfiguration getUmaConfiguration() {
         if (umaConfiguration == null) {
-            UmaConfigurationService service = UmaClientFactory.instance().createMetaDataConfigurationService(umaWellknownEndpoint);
-            umaConfiguration = service.getMetadataConfiguration();
+            umaConfiguration = getConfigurationService().getMetadataConfiguration();
         }
         return umaConfiguration;
     }
 
-    public ResourceSetRegistrationService getResourceSetRegistrationService() {
-        return UmaClientFactory.instance().createResourceSetRegistrationService(umaConfiguration);
+    public synchronized ResourceSetRegistrationService getResourceSetRegistrationService() {
+        if (resourceSetRegistrationService == null) {
+            resourceSetRegistrationService = UmaClientFactory.instance().createResourceSetRegistrationService(umaConfiguration);
+        }
+        return resourceSetRegistrationService;
     }
 }
