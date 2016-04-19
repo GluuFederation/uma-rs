@@ -34,8 +34,9 @@ public class PatProvider {
     private void obtainPat() {
         try {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
+            Configuration configuration = serviceProvider.getConfiguration();
 
-            patToken = UmaClient.requestPat(umaConfiguration.getTokenEndpoint(), null, null);
+            patToken = UmaClient.requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             throw new RuntimeException(e);
