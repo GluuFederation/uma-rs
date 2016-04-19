@@ -1,5 +1,7 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
+import java.util.List;
+
 /**
  * @author Yuriy Zabrovarnyy
  * @version 0.9, 19/04/2016
@@ -8,14 +10,18 @@ package org.xdi.oxd.rs.protect.resteasy;
 public class Key {
 
     private String path;
-    private String httpMethod;
+    private List<String> httpMethods;
 
     public Key() {
     }
 
-    public Key(String path, String httpMethod) {
+    public Key(String path, List<String> httpMethod) {
         this.path = path;
-        this.httpMethod = httpMethod;
+        this.httpMethods = httpMethod;
+    }
+
+    public String getResourceName() {
+        return httpMethods + " " + path;
     }
 
     public String getPath() {
@@ -26,12 +32,12 @@ public class Key {
         this.path = path;
     }
 
-    public String getHttpMethod() {
-        return httpMethod;
+    public List<String> getHttpMethods() {
+        return httpMethods;
     }
 
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
+    public void setHttpMethods(List<String> httpMethods) {
+        this.httpMethods = httpMethods;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class Key {
 
         Key key = (Key) o;
 
-        if (httpMethod != null ? !httpMethod.equals(key.httpMethod) : key.httpMethod != null) return false;
+        if (httpMethods != null ? !httpMethods.equals(key.httpMethods) : key.httpMethods != null) return false;
         if (path != null ? !path.equals(key.path) : key.path != null) return false;
 
         return true;
@@ -50,7 +56,7 @@ public class Key {
     @Override
     public int hashCode() {
         int result = path != null ? path.hashCode() : 0;
-        result = 31 * result + (httpMethod != null ? httpMethod.hashCode() : 0);
+        result = 31 * result + (httpMethods != null ? httpMethods.hashCode() : 0);
         return result;
     }
 
@@ -59,7 +65,7 @@ public class Key {
         final StringBuilder sb = new StringBuilder();
         sb.append("Key");
         sb.append("{path='").append(path).append('\'');
-        sb.append(", httpMethod='").append(httpMethod).append('\'');
+        sb.append(", httpMethods='").append(httpMethods).append('\'');
         sb.append('}');
         return sb.toString();
     }
