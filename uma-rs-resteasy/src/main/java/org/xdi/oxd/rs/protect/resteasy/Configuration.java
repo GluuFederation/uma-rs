@@ -1,5 +1,7 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  * @author Yuriy Zabrovarnyy
  * @version 0.9, 19/04/2016
@@ -7,8 +9,11 @@ package org.xdi.oxd.rs.protect.resteasy;
 
 public class Configuration {
 
+    @JsonProperty(value = "well_known_endpoint")
     private String umaWellknownEndpoint;
+    @JsonProperty(value = "pat_client_id")
     private String umaPatClientId;
+    @JsonProperty(value = "pat_client_secret")
     private String umaPatClientSecret;
 
     public Configuration() {
