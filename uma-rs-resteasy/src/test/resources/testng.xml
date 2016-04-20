@@ -5,6 +5,7 @@
     <test name="Core" enabled="true">
         <classes>
             <class name="org.xdi.oxd.rs.protect.resteasy.KeyTest"/>
+            <class name="org.xdi.oxd.rs.protect.resteasy.ConfigurationLoaderTest"/>
         </classes>
     </test>
 </suite>
