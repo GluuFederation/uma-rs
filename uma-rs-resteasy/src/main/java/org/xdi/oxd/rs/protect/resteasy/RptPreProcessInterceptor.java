@@ -10,6 +10,7 @@ import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.xdi.oxauth.model.uma.RptIntrospectionResponse;
+import org.xdi.oxauth.model.uma.UmaPermission;
 import org.xdi.util.StringHelper;
 
 import javax.ws.rs.WebApplicationException;
@@ -33,10 +34,12 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
     private final ResourceRegistrar resourceRegistrar;
     private final PatProvider patProvider;
+    private final ServiceProvider serviceProvider;
 
     public RptPreProcessInterceptor(ResourceRegistrar resourceRegistrar) {
         this.resourceRegistrar = resourceRegistrar;
         this.patProvider = resourceRegistrar.getPatProvider();
+        this.serviceProvider = resourceRegistrar.getServiceProvider();
     }
 
     @Override
@@ -100,7 +103,15 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return null;
     }
 
-    public Response registerTicketResponse() {
+    public Response registerTicketResponse(String path, String httpMethod) {
+
+        resourceRegistrar.getResourceSetId(path, httpMethod);
+
+        UmaPermission permission = new UmaPermission();
+        permission.setResourceSetId();
+
+        resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
+                "Bearer " + patProvider.getPatToken(), serviceProvider.getAmHost(), permission);
         return Response.status(Response.Status.UNAUTHORIZED) // todo ticket registration here!!!
                 .build();
     }

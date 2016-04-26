@@ -1,6 +1,7 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
@@ -38,6 +39,20 @@ public class ResourceRegistrar {
         for (RsResource resource : resources) {
             register(resource);
         }
+    }
+
+    public String getResourceSetId(String path, String httpMethod) {
+        String id = idMap.get(new Key(path, Lists.newArrayList(httpMethod)));
+        if (id != null) {
+            return id;
+        }
+
+        for (Key key : idMap.keySet()) {
+            if (key.getPath().equalsIgnoreCase(path) && key.getHttpMethods().contains(httpMethod)) {
+                return idMap.get(key);
+            }
+        }
+        return null;
     }
 
     private void register(RsResource resource) {
