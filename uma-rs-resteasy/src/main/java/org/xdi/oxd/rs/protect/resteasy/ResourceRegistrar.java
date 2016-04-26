@@ -1,6 +1,7 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
@@ -41,18 +42,30 @@ public class ResourceRegistrar {
         }
     }
 
-    public String getResourceSetId(String path, String httpMethod) {
+    public Key getKey(String path, String httpMethod) {
+        if (Strings.isNullOrEmpty(path) || Strings.isNullOrEmpty(httpMethod)) {
+            return null;
+        }
+
         String id = idMap.get(new Key(path, Lists.newArrayList(httpMethod)));
         if (id != null) {
-            return id;
+            return new Key(path, Lists.newArrayList(httpMethod));
         }
 
         for (Key key : idMap.keySet()) {
             if (key.getPath().equalsIgnoreCase(path) && key.getHttpMethods().contains(httpMethod)) {
-                return idMap.get(key);
+                return key;
             }
         }
         return null;
+    }
+
+    public String getResourceSetId(Key key) {
+        return key != null ? idMap.get(key) : null;
+    }
+
+    public String getResourceSetId(String path, String httpMethod) {
+        return getResourceSetId(getKey(path, httpMethod));
     }
 
     private void register(RsResource resource) {

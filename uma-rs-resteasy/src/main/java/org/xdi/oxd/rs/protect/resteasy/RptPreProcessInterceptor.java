@@ -9,6 +9,7 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.xdi.oxauth.model.uma.PermissionTicket;
 import org.xdi.oxauth.model.uma.RptIntrospectionResponse;
 import org.xdi.oxauth.model.uma.UmaPermission;
 import org.xdi.util.StringHelper;
@@ -44,6 +45,9 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
     @Override
     public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException {
+
+        String path = null;
+        String httpMethod = null;
         try {
             final HttpHeaders httpHeaders = request.getHttpHeaders();
             if (httpHeaders != null) {
@@ -67,7 +71,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            return (ServerResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return (ServerResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
 
         // If the client's request at the protected resource has no RPT,
@@ -77,7 +81,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         // the corresponding authorization server.
         LOG.debug("Client does not present valid RPT. Registering permission ticket ...");
 
-        return (ServerResponse) registerTicketResponse();
+        return (ServerResponse) registerTicketResponse(path, httpMethod);
     }
 
     public static String getRptFromAuthorization(String authorizationHeader) {
@@ -105,14 +109,37 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
     public Response registerTicketResponse(String path, String httpMethod) {
 
-        resourceRegistrar.getResourceSetId(path, httpMethod);
+        Key key = resourceRegistrar.getKey(path, httpMethod);
+        if (key == null) {
+            LOG.error("Resource is not registered. Path: " + path + ", httpMethod: " + httpMethod + ". Please register it via uma-rs configuration.");
+            LOG.error("Skip protection !!!");
+            return null;
+        }
 
-        UmaPermission permission = new UmaPermission();
-        permission.setResourceSetId();
+        String resourceSetId = resourceRegistrar.getResourceSetId(key);
 
-        resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
-                "Bearer " + patProvider.getPatToken(), serviceProvider.getAmHost(), permission);
-        return Response.status(Response.Status.UNAUTHORIZED) // todo ticket registration here!!!
+        try {
+            UmaPermission permission = new UmaPermission();
+            permission.setResourceSetId(resourceSetId);
+
+            PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
+                    "Bearer " + patProvider.getPatToken(), serviceProvider.getAmHost(), permission);
+            if (ticket != null) {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .header("WWW-Authenticate", "UMA realm=\"rs\"," +
+                                "as_uri=\"https://" + serviceProvider.getAmHost() + "\"," +
+                                "error=\"insufficient_scope\"," +
+                                "ticket=\"" + ticket.getTicket() + "\"")
+                        .entity(ticket)
+                        .build();
+            } else {
+                LOG.error("Failed to register permission ticket. Response is null.");
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to register permission.", e);
+        }
+        return Response.status(Response.Status.FORBIDDEN)
+                .header("Warning:", "UMA Authorization Server Unreachable")
                 .build();
     }
 }
