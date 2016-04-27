@@ -39,6 +39,10 @@ public class ResourceRegistrar {
         return new RsProtector(Lists.newArrayList(resourceMap.values()));
     }
 
+    public RsResource getRsResource(Key key) {
+        return resourceMap.get(key);
+    }
+
     public void register(List<RsResource> resources) {
         Preconditions.checkNotNull(resources);
 
