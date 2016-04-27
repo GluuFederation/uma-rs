@@ -42,27 +42,18 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
     @Override
     public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException {
 
-        String path = null;
-        String httpMethod = null;
+        String path = getPath(request);
+        String httpMethod = request.getHttpMethod();
+
         try {
-            final HttpHeaders httpHeaders = request.getHttpHeaders();
-            if (httpHeaders != null) {
-                final List<String> authHeaders = httpHeaders.getRequestHeader("Authorization");
-                final List<String> asHeaders = httpHeaders.getRequestHeader("AsHost");
-                if (authHeaders != null && !authHeaders.isEmpty()) {
-                    final String authorization = authHeaders.get(0);
-                    final String rpt = getRptFromAuthorization(authorization);
-                    if (!Strings.isNullOrEmpty(rpt)) {
-                        LOG.debug("RPT present in request");
-                        final RptIntrospectionResponse status = requestRptStatus(rpt);
-                        if (status != null && status.getActive()) {
-                            request.setAttribute(RPT_STATUS_ATTR_NAME, status);
-                            return null;
-                        }
-                    } else if (asHeaders != null && !asHeaders.isEmpty()) {
-                        final String asHost = asHeaders.get(0);
-                        // todo : register ticket
-                    }
+            String rpt = getRpt(request.getHttpHeaders());
+
+            if (!Strings.isNullOrEmpty(rpt)) {
+                LOG.debug("RPT present in request");
+                final RptIntrospectionResponse status = requestRptStatus(rpt);
+                if (status != null && status.getActive()) {
+                    request.setAttribute(RPT_STATUS_ATTR_NAME, status);
+                    return null;
                 }
             }
         } catch (Exception e) {
@@ -80,11 +71,29 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return (ServerResponse) registerTicketResponse(path, httpMethod);
     }
 
+    private String getPath(HttpRequest request) {
+        if (request.getUri() != null && request.getUri().getAbsolutePath() != null) {
+            return request.getUri().getAbsolutePath().getPath();
+        }
+        return null;
+    }
+
     public static String getRptFromAuthorization(String authorizationHeader) {
         if (StringHelper.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             return authorizationHeader.substring("Bearer ".length());
         }
         return null;
+    }
+
+    public static String getRpt(HttpHeaders httpHeaders) {
+        if (httpHeaders != null) {
+            final List<String> authHeaders = httpHeaders.getRequestHeader("Authorization");
+            if (authHeaders != null && !authHeaders.isEmpty()) {
+                final String authorization = authHeaders.get(0);
+                return getRptFromAuthorization(authorization);
+            }
+        }
+        return "";
     }
 
     public RptIntrospectionResponse requestRptStatus(String p_rpt) {
