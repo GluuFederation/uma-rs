@@ -3,7 +3,6 @@ package org.xdi.oxd.rs.protect.resteasy;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
@@ -17,7 +16,6 @@ import org.xdi.util.StringHelper;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 import java.util.List;
 
 /**
@@ -25,8 +23,6 @@ import java.util.List;
  * @version 0.9, 18/04/2016
  */
 
-@Provider
-@ServerInterceptor
 public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
     private static final Logger LOG = Logger.getLogger(RptPreProcessInterceptor.class);
