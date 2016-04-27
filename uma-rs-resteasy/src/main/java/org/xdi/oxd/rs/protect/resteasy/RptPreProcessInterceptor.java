@@ -57,6 +57,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 LOG.debug("RPT present in request");
                 final RptIntrospectionResponse status = requestRptStatus(rpt);
                 if (hasPermission(status, key, httpMethod)) {
+                    LOG.debug("RPT has enough permissions, access GRANTED. Path: " + path + ", httpMethod:" + httpMethod);
                     return null;
                 }
             }
