@@ -28,8 +28,6 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
     private static final Logger LOG = Logger.getLogger(RptPreProcessInterceptor.class);
 
-    public static final String RPT_STATUS_ATTR_NAME = "rptStatus";
-
     private final ResourceRegistrar resourceRegistrar;
     private final PatProvider patProvider;
     private final ServiceProvider serviceProvider;
@@ -46,17 +44,19 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         String path = getPath(request);
         String httpMethod = request.getHttpMethod();
 
+        Key key = resourceRegistrar.getKey(path, httpMethod);
+        if (key == null) {
+            LOG.debug("Resource is not protected with UMA, path:" + path + ", httpMethod: " + httpMethod);
+            return null;
+        }
+
         try {
             String rpt = getRpt(request.getHttpHeaders());
 
             if (!Strings.isNullOrEmpty(rpt)) {
                 LOG.debug("RPT present in request");
                 final RptIntrospectionResponse status = requestRptStatus(rpt);
-                if (status != null && status.getActive()) {
-                    request.setAttribute(RPT_STATUS_ATTR_NAME, status);
-
-                    // todo
-
+                if (hasPermission(status, key, httpMethod)) {
                     return null;
                 }
             }
@@ -73,6 +73,24 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         LOG.debug("Client does not present valid RPT. Registering permission ticket ...");
 
         return (ServerResponse) registerTicketResponse(path, httpMethod);
+    }
+
+    private boolean hasPermission(RptIntrospectionResponse status, Key key, String httpMethod) {
+        if (status != null && status.getActive()) {
+            String resourceSetId = resourceRegistrar.getResourceSetId(key);
+            if (Strings.isNullOrEmpty(resourceSetId)) {
+                LOG.error("Resource has key but is not registered on AS. Key: " + key);
+                return false;
+            }
+
+            for (UmaPermission permission : status.getPermissions()) {
+                if (permission.getResourceSetId().equals(resourceSetId) &&
+                        resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private String getPath(HttpRequest request) {

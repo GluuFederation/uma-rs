@@ -7,6 +7,7 @@ import com.google.common.io.Closeables;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -53,10 +54,13 @@ public class RsProtector {
         if (rsResource != null) {
             final List<String> requiredScopes = rsResource.scopes(httpMethod);
             if (requiredScopes != null) {
-                return requiredScopes.containsAll(presentScopes);
+                return !Collections.disjoint(requiredScopes, presentScopes); // contains any
             }
         }
         return false;
     }
 
+    public Map<String, RsResource> getResourceMap() {
+        return resourceMap;
+    }
 }

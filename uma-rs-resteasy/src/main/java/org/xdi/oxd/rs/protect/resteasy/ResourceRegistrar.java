@@ -9,6 +9,7 @@ import org.jboss.resteasy.client.ClientResponseFailure;
 import org.xdi.oxauth.model.uma.ResourceSet;
 import org.xdi.oxauth.model.uma.ResourceSetResponse;
 import org.xdi.oxd.rs.protect.Condition;
+import org.xdi.oxd.rs.protect.RsProtector;
 import org.xdi.oxd.rs.protect.RsResource;
 
 import java.util.List;
@@ -34,7 +35,11 @@ public class ResourceRegistrar {
         this.serviceProvider = patProvider.getServiceProvider();
     }
 
-    public void registerOnAuthorizationServer(List<RsResource> resources) {
+    public RsProtector getProtector() {
+        return new RsProtector(Lists.newArrayList(resourceMap.values()));
+    }
+
+    public void register(List<RsResource> resources) {
         Preconditions.checkNotNull(resources);
 
         for (RsResource resource : resources) {

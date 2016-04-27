@@ -14,14 +14,15 @@ public class ConfigurationLoader {
 
     private static final Logger LOG = Logger.getLogger(ConfigurationLoader.class);
 
+    /**
+     * Avoid instance creation.
+     */
+    private ConfigurationLoader() {
+    }
+
     public static Configuration loadFromJson(InputStream inputStream) {
         try {
-            try {
-                return Jackson.createJsonMapper().readValue(inputStream, Configuration.class);
-            } catch (Exception e) {
-                LOG.error(e.getMessage(), e);
-            }
-            return null;
+            return Jackson.createJsonMapper().readValue(inputStream, Configuration.class);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return null;
