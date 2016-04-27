@@ -12,7 +12,7 @@ import org.xdi.oxd.rs.protect.Condition;
 import org.xdi.oxd.rs.protect.RsProtector;
 import org.xdi.oxd.rs.protect.RsResource;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -43,7 +43,7 @@ public class ResourceRegistrar {
         return resourceMap.get(key);
     }
 
-    public void register(List<RsResource> resources) {
+    public void register(Collection<RsResource> resources) {
         Preconditions.checkNotNull(resources);
 
         for (RsResource resource : resources) {
