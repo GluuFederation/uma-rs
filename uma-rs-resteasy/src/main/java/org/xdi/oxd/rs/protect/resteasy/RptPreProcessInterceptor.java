@@ -11,6 +11,7 @@ import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.xdi.oxauth.model.uma.PermissionTicket;
 import org.xdi.oxauth.model.uma.RptIntrospectionResponse;
 import org.xdi.oxauth.model.uma.UmaPermission;
+import org.xdi.oxd.rs.protect.Jackson;
 import org.xdi.util.StringHelper;
 
 import javax.ws.rs.WebApplicationException;
@@ -53,6 +54,9 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 final RptIntrospectionResponse status = requestRptStatus(rpt);
                 if (status != null && status.getActive()) {
                     request.setAttribute(RPT_STATUS_ATTR_NAME, status);
+
+                    // todo
+
                     return null;
                 }
             }
@@ -96,18 +100,18 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return "";
     }
 
-    public RptIntrospectionResponse requestRptStatus(String p_rpt) {
-        if (StringUtils.isNotBlank(p_rpt)) {
+    public RptIntrospectionResponse requestRptStatus(String rpt) {
+        if (StringUtils.isNotBlank(rpt)) {
 
             LOG.debug("Request RPT status...");
-//            final RptStatusService rptStatusService = UmaClientFactory.instance().createRptStatusService(umaConfiguration);
-//            final RptIntrospectionResponse status = rptStatusService.requestRptStatus("Bearer " + pat, p_rpt, "");
-//            if (status != null) {
-//                LOG.debug("RPT status: " + Jackson.asJsonSilently(status));
-//                return status;
-//            } else {
-//                LOG.debug("Unable to retrieve RPT status from AM.");
-//            }
+
+            final RptIntrospectionResponse status = serviceProvider.getRptStatusService().requestRptStatus("Bearer " + patProvider.getPatToken(), rpt, "");
+            if (status != null) {
+                LOG.debug("RPT status: " + Jackson.asJsonSilently(status));
+                return status;
+            } else {
+                LOG.debug("Unable to retrieve RPT status from AM.");
+            }
         }
         return null;
     }

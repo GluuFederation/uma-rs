@@ -3,6 +3,7 @@ package org.xdi.oxd.rs.protect.resteasy;
 import org.apache.log4j.Logger;
 import org.xdi.oxauth.client.uma.PermissionRegistrationService;
 import org.xdi.oxauth.client.uma.ResourceSetRegistrationService;
+import org.xdi.oxauth.client.uma.RptStatusService;
 import org.xdi.oxauth.client.uma.UmaClientFactory;
 import org.xdi.oxauth.client.uma.UmaConfigurationService;
 import org.xdi.oxauth.model.uma.UmaConfiguration;
@@ -24,6 +25,7 @@ public class ServiceProvider {
     private UmaConfigurationService configurationService = null;
     private ResourceSetRegistrationService resourceSetRegistrationService = null;
     private PermissionRegistrationService permissionRegistrationService;
+    private RptStatusService rptStatusService;
 
     public ServiceProvider(Configuration configuration) {
         this.configuration = configuration;
@@ -31,6 +33,13 @@ public class ServiceProvider {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public synchronized RptStatusService getRptStatusService() {
+        if (rptStatusService == null) {
+            rptStatusService = UmaClientFactory.instance().createRptStatusService(umaConfiguration);
+        }
+        return rptStatusService;
     }
 
     public synchronized UmaConfigurationService getConfigurationService() {
