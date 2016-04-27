@@ -31,6 +31,10 @@ public class PatProvider {
         return patToken.getAccessToken();
     }
 
+    public synchronized void clearPat() {
+        patToken = null;
+    }
+
     private void obtainPat() {
         try {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
