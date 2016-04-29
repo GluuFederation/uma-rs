@@ -42,4 +42,15 @@ public class Configuration {
     public void setUmaPatClientSecret(String umaPatClientSecret) {
         this.umaPatClientSecret = umaPatClientSecret;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Configuration");
+        sb.append("{umaWellknownEndpoint='").append(umaWellknownEndpoint).append('\'');
+        sb.append(", umaPatClientId='").append(umaPatClientId).append('\'');
+        sb.append(", umaPatClientSecret='").append(umaPatClientSecret).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
