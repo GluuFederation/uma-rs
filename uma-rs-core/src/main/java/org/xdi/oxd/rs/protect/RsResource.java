@@ -56,4 +56,15 @@ public class RsResource implements Serializable {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("RsResource");
+        sb.append("{path='").append(path).append('\'');
+        sb.append(", conditions=").append(conditions);
+        sb.append(", httpMethodToScopes=").append(httpMethodToScopes);
+        sb.append('}');
+        return sb.toString();
+    }
 }
