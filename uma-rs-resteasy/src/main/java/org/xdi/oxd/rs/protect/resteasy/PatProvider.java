@@ -35,6 +35,11 @@ public class PatProvider {
         patToken = null;
     }
 
+    public String renewPat() {
+        clearPat();
+        return getPatToken();
+    }
+
     private void obtainPat() {
         try {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
