@@ -15,8 +15,18 @@ public class Configuration {
     private String umaPatClientId;
     @JsonProperty(value = "pat_client_secret")
     private String umaPatClientSecret;
+    @JsonProperty(value = "trust_all")
+    private boolean trustAll;
 
     public Configuration() {
+    }
+
+    public boolean isTrustAll() {
+        return trustAll;
+    }
+
+    public void setTrustAll(boolean trustAll) {
+        this.trustAll = trustAll;
     }
 
     public String getUmaWellknownEndpoint() {
@@ -50,6 +60,7 @@ public class Configuration {
         sb.append("{umaWellknownEndpoint='").append(umaWellknownEndpoint).append('\'');
         sb.append(", umaPatClientId='").append(umaPatClientId).append('\'');
         sb.append(", umaPatClientSecret='").append(umaPatClientSecret).append('\'');
+        sb.append(", trustAll='").append(trustAll).append('\'');
         sb.append('}');
         return sb.toString();
     }
