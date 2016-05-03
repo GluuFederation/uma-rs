@@ -50,7 +50,7 @@ public class PatProvider {
 
             patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
+            LOG.error("Failed to obtain PAT. " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
