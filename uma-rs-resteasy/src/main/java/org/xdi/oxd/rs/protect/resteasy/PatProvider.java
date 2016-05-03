@@ -2,9 +2,12 @@ package org.xdi.oxd.rs.protect.resteasy;
 
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
-import org.xdi.oxauth.client.uma.wrapper.UmaClient;
+import org.xdi.oxauth.client.TokenClient;
+import org.xdi.oxauth.client.TokenResponse;
 import org.xdi.oxauth.model.uma.UmaConfiguration;
+import org.xdi.oxauth.model.uma.UmaScopeType;
 import org.xdi.oxauth.model.uma.wrapper.Token;
+import org.xdi.oxauth.model.util.Util;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -45,7 +48,7 @@ public class PatProvider {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
             Configuration configuration = serviceProvider.getConfiguration();
 
-            patToken = UmaClient.requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
+            patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             throw new RuntimeException(e);
@@ -54,5 +57,29 @@ public class PatProvider {
 
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
+    }
+
+    public Token requestPat(final String tokenUrl, final String umaClientId, final String umaClientSecret, String... scopeArray) throws Exception {
+
+        String scope = UmaScopeType.PROTECTION.getValue();
+        if (scopeArray != null && scopeArray.length > 0) {
+            for (String s : scopeArray) {
+                scope = scope + " " + s;
+            }
+        }
+
+        TokenClient tokenClient = new TokenClient(tokenUrl);
+        tokenClient.setExecutor(serviceProvider.getClientExecutor());
+        TokenResponse response = tokenClient.execClientCredentialsGrant(scope, umaClientId, umaClientSecret);
+
+        if (response.getStatus() == 200) {
+            final String patToken = response.getAccessToken();
+            final Integer expiresIn = response.getExpiresIn();
+            if (Util.allNotBlank(patToken)) {
+                return new Token(null, null, patToken, UmaScopeType.PROTECTION.getValue(), expiresIn);
+            }
+        }
+
+        return null;
     }
 }

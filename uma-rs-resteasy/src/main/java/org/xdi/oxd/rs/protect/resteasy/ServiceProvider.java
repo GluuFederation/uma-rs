@@ -107,6 +107,10 @@ public class ServiceProvider {
         return "";
     }
 
+    public ClientExecutor getClientExecutor() {
+        return clientExecutor;
+    }
+
     public static HttpClient createHttpClientTrustAll() {
         try {
             SSLSocketFactory sf = new SSLSocketFactory(new TrustStrategy() {
