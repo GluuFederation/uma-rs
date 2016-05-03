@@ -58,14 +58,14 @@ public class ServiceProvider {
 
     public synchronized ResourceSetRegistrationService getResourceSetRegistrationService() {
         if (resourceSetRegistrationService == null) {
-            resourceSetRegistrationService = UmaClientFactory.instance().createResourceSetRegistrationService(umaConfiguration);
+            resourceSetRegistrationService = UmaClientFactory.instance().createResourceSetRegistrationService(getUmaConfiguration());
         }
         return resourceSetRegistrationService;
     }
 
     public synchronized PermissionRegistrationService getPermissionRegistrationService() {
         if (permissionRegistrationService == null) {
-            permissionRegistrationService = UmaClientFactory.instance().createResourceSetPermissionRegistrationService(umaConfiguration);
+            permissionRegistrationService = UmaClientFactory.instance().createResourceSetPermissionRegistrationService(getUmaConfiguration());
         }
         return permissionRegistrationService;
     }

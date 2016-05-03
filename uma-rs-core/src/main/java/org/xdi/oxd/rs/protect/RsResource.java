@@ -25,8 +25,8 @@ public class RsResource implements Serializable {
         return path;
     }
 
-    public void setPath(String id) {
-        this.path = id;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public List<Condition> getConditions() {
