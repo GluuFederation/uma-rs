@@ -42,12 +42,15 @@ UMA Resource Server library - helps to easily protect Java based project with UM
 ### Usage
 
 ```java
- // initialize protector (typically as application scope)
- final RsProtector protector = RsProtector.instance(fileInputStream("simple.json"));
+Configuration configuration = ConfigurationLoader.loadFromJson(inputStream(CONFIGURATION_FILE_NAME));
+Collection<RsResource> values = RsProtector.instance(inputStream(PROTECTION_CONFIGURATION_FILE_NAME)).getResourceMap().values();
 
- // somewhere in http interceptor/filter code
- if (!protector.hasAccess(httpMethod, presentScopes)) {
-     throw new WebApplicationException(UNAUTHORIZED);
- }
+ServiceProvider serviceProvider = new ServiceProvider(configuration);
+PatProvider patProvider = new PatProvider(serviceProvider);
+ResourceRegistrar resourceRegistrar = new ResourceRegistrar(patProvider);
+
+resourceRegistrar.register(values);
 ```
+
+Check [RS demo](https://github.com/GluuFederation/oxUmaDemo/tree/master/RS) project sources.
 
