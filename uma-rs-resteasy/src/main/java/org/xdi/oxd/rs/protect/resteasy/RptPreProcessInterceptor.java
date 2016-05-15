@@ -1,5 +1,6 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,6 +34,10 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
     private final ServiceProvider serviceProvider;
 
     public RptPreProcessInterceptor(ResourceRegistrar resourceRegistrar) {
+        Preconditions.checkNotNull(resourceRegistrar, "Resource registrar is null.");
+        Preconditions.checkNotNull(resourceRegistrar.getPatProvider(), "PAT Provider is null.");
+        Preconditions.checkNotNull(resourceRegistrar.getServiceProvider(), "Service Provider is null.");
+
         this.resourceRegistrar = resourceRegistrar;
         this.patProvider = resourceRegistrar.getPatProvider();
         this.serviceProvider = resourceRegistrar.getServiceProvider();
