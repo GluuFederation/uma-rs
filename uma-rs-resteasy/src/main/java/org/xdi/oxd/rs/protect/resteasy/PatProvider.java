@@ -36,6 +36,7 @@ public class PatProvider {
 
     public synchronized void clearPat() {
         patToken = null;
+        LOG.trace("Cleared PAT.");
     }
 
     public String renewPat() {
@@ -49,6 +50,7 @@ public class PatProvider {
             Configuration configuration = serviceProvider.getConfiguration();
 
             patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
+            LOG.trace("New PAT obtained.");
         } catch (Exception e) {
             LOG.error("Failed to obtain PAT. " + e.getMessage(), e);
             throw new RuntimeException(e);
