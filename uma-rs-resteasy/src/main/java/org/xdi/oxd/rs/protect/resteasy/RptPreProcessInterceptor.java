@@ -62,7 +62,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             if (!Strings.isNullOrEmpty(rpt)) {
                 LOG.debug("RPT present in request");
                 final RptIntrospectionResponse status = requestRptStatus(rpt);
-                if (hasPermission(status, key, httpMethod)) {
+                if (hasPermission(status, key, httpMethod, isGat(rpt))) {
                     LOG.debug("RPT has enough permissions, access GRANTED. Path: " + path + ", httpMethod:" + httpMethod);
                     return null;
                 }
@@ -85,7 +85,11 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return (ServerResponse) registerTicketResponse(path, httpMethod);
     }
 
-    private boolean hasPermission(RptIntrospectionResponse status, Key key, String httpMethod) {
+    private static boolean isGat(String rpt) {
+        return !Strings.isNullOrEmpty(rpt) && rpt.startsWith("gat_");
+    }
+
+    private boolean hasPermission(RptIntrospectionResponse status, Key key, String httpMethod, boolean isGat) {
         if (status != null && status.getActive()) {
             String resourceSetId = resourceRegistrar.getResourceSetId(key);
             if (Strings.isNullOrEmpty(resourceSetId)) {
@@ -93,10 +97,15 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 return false;
             }
 
-            for (UmaPermission permission : status.getPermissions()) {
-                if (permission.getResourceSetId().equals(resourceSetId) &&
-                        resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
-                    return true;
+            if (status.getPermissions() != null) {
+                for (UmaPermission permission : status.getPermissions()) {
+                    if (permission.getResourceSetId().equals(resourceSetId) &&
+                            resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
+                        return true;
+                    }
+                    if (isGat && resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -131,14 +140,14 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
     public RptIntrospectionResponse requestRptStatus(String rpt) {
         if (StringUtils.isNotBlank(rpt)) {
 
-            LOG.debug("Request RPT status...");
+            LOG.debug("Request RPT " + rpt + " status...");
 
             final RptIntrospectionResponse status = serviceProvider.getRptStatusService().requestRptStatus("Bearer " + patProvider.getPatToken(), rpt, "");
             if (status != null) {
                 LOG.debug("RPT status: " + Jackson.asJsonSilently(status));
                 return status;
             } else {
-                LOG.debug("Unable to retrieve RPT status from AM.");
+                LOG.debug("Unable to retrieve RPT " + rpt + " status from AM.");
             }
         }
         return null;
