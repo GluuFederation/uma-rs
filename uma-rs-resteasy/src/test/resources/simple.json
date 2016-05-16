@@ -13,6 +13,9 @@
                 "scopes":[
                     "http://photoz.example.com/dev/actions/all",
                     "http://photoz.example.com/dev/actions/add"
+                ],
+                "ticketScopes":[
+                    "http://photoz.example.com/dev/actions/add"
                 ]
             }
         ]

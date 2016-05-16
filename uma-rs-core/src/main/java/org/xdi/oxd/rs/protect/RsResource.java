@@ -19,7 +19,7 @@ public class RsResource implements Serializable {
     @JsonProperty(value = "conditions")
     List<Condition> conditions;
 
-    private Map<String, List<String>> httpMethodToScopes = null;
+    private Map<String, Condition> httpMethodToCondition = null;
 
     public String getPath() {
         return path;
@@ -38,19 +38,29 @@ public class RsResource implements Serializable {
     }
 
     public List<String> scopes(String httpMethod) {
-        if (httpMethodToScopes == null) {
+        return getConditionMap().get(httpMethod).getScopes();
+    }
+
+    public List<String> scopesForTicket(String httpMethod) {
+        Condition condition = getConditionMap().get(httpMethod);
+        return condition.getTicketScopes() != null && !condition.getTicketScopes().isEmpty() ?
+                condition.getTicketScopes() : condition.getScopes();
+    }
+
+    private Map<String, Condition> getConditionMap() {
+        if (httpMethodToCondition == null) {
             initMap();
         }
-        return httpMethodToScopes.get(httpMethod);
+        return httpMethodToCondition;
     }
 
     private void initMap() {
-        httpMethodToScopes = Maps.newHashMap();
+        httpMethodToCondition = Maps.newHashMap();
         if (conditions != null) {
             for (Condition condition : conditions) {
                 if (condition.getHttpMethods() != null) {
                     for (String httpMethod : condition.getHttpMethods()) {
-                        httpMethodToScopes.put(httpMethod, condition.getScopes());
+                        httpMethodToCondition.put(httpMethod, condition);
                     }
                 }
             }
@@ -63,7 +73,7 @@ public class RsResource implements Serializable {
         sb.append("RsResource");
         sb.append("{path='").append(path).append('\'');
         sb.append(", conditions=").append(conditions);
-        sb.append(", httpMethodToScopes=").append(httpMethodToScopes);
+        sb.append(", httpMethodToCondition=").append(httpMethodToCondition);
         sb.append('}');
         return sb.toString();
     }

@@ -15,6 +15,16 @@ public class Condition {
     List<String> httpMethods;
     @JsonProperty(value = "scopes")
     List<String> scopes;
+    @JsonProperty(value = "ticketScopes")
+    List<String> ticketScopes;
+
+    public List<String> getTicketScopes() {
+        return ticketScopes;
+    }
+
+    public void setTicketScopes(List<String> ticketScopes) {
+        this.ticketScopes = ticketScopes;
+    }
 
     public List<String> getHttpMethods() {
         return httpMethods;
