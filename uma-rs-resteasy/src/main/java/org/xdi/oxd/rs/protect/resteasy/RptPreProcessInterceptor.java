@@ -99,7 +99,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
             if (status.getPermissions() != null) {
                 for (UmaPermission permission : status.getPermissions()) {
-                    if (permission.getResourceSetId().equals(resourceSetId) &&
+                    if (permission.getResourceSetId() != null && permission.getResourceSetId().equals(resourceSetId) &&
                             resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
                         return true;
                     }
