@@ -62,7 +62,7 @@ public class ResourceRegistrar {
         }
 
         for (Key key : idMap.keySet()) {
-            if (key.getPath().equalsIgnoreCase(path) && key.getHttpMethods().contains(httpMethod)) {
+            if (path.startsWith(key.getPath()) && key.getHttpMethods().contains(httpMethod)) {
                 return key;
             }
         }
