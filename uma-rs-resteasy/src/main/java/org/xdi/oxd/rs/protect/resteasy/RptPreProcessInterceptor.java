@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
@@ -68,6 +69,9 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
+            if (e instanceof ClientResponseFailure) {
+                LOG.error("Entity: " + ((((ClientResponseFailure) e).getResponse()).getEntity(String.class)));
+            }
             return (ServerResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
 
