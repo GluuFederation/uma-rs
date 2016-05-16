@@ -163,11 +163,13 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
                     "Bearer " + patProvider.getPatToken(), serviceProvider.getAmHost(), permission);
             if (ticket != null) {
+                String headerValue = "UMA realm=\"rs\"," +
+                        "as_uri=\"https://" + serviceProvider.getAmHost() + "\"," +
+                        "error=\"insufficient_scope\"," +
+                        "ticket=\"" + ticket.getTicket() + "\"";
+                LOG.debug("Ticket registered, " + headerValue);
                 return Response.status(Response.Status.FORBIDDEN)
-                        .header("WWW-Authenticate", "UMA realm=\"rs\"," +
-                                "as_uri=\"https://" + serviceProvider.getAmHost() + "\"," +
-                                "error=\"insufficient_scope\"," +
-                                "ticket=\"" + ticket.getTicket() + "\"")
+                        .header("WWW-Authenticate", headerValue)
                         .entity(ticket)
                         .build();
             } else {
