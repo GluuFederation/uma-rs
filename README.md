@@ -20,6 +20,9 @@ UMA Resource Server library - helps to easily protect Java based project with UM
                 "scopes":[
                     "http://photoz.example.com/dev/actions/all",
                     "http://photoz.example.com/dev/actions/add"
+                ],
+                "ticketScopes":[
+                    "http://photoz.example.com/dev/actions/add"
                 ]
             }
         ]
@@ -38,6 +41,8 @@ UMA Resource Server library - helps to easily protect Java based project with UM
 ]
 }
 ```
+
+`ticketScopes` are used for UMA ticket registration. If it is skipped then ALL scopes are registered for ticket.
 
 ### Usage
 
