@@ -30,9 +30,9 @@ public class ResourceRegistrar {
     private final PatProvider patProvider;
     private final ServiceProvider serviceProvider;
 
-    public ResourceRegistrar(PatProvider patProvider) {
+    public ResourceRegistrar(PatProvider patProvider, ServiceProvider serviceProvider) {
         this.patProvider = patProvider;
-        this.serviceProvider = patProvider.getServiceProvider();
+        this.serviceProvider = serviceProvider;
     }
 
     public RsProtector getProtector() {
