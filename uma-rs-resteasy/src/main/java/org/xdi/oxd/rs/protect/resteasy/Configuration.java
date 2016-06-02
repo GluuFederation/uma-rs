@@ -11,8 +11,8 @@ public class Configuration {
 
     public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma-configuration";
 
-    @JsonProperty(value = "well_known_endpoint")
-    private String umaWellknownEndpoint;
+    @JsonProperty(value = "op_host")
+    private String opHost;
     @JsonProperty(value = "pat_client_id")
     private String umaPatClientId;
     @JsonProperty(value = "pat_client_secret")
@@ -31,12 +31,16 @@ public class Configuration {
         this.trustAll = trustAll;
     }
 
-    public String getUmaWellknownEndpoint() {
-        return umaWellknownEndpoint;
+    public String wellKnownEndpoint() {
+        return opHost + WELL_KNOWN_UMA_PATH;
     }
 
-    public void setUmaWellknownEndpoint(String umaWellknownEndpoint) {
-        this.umaWellknownEndpoint = umaWellknownEndpoint;
+    public String getOpHost() {
+        return opHost;
+    }
+
+    public void setOpHost(String opHost) {
+        this.opHost = opHost;
     }
 
     public String getUmaPatClientId() {
@@ -59,7 +63,7 @@ public class Configuration {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Configuration");
-        sb.append("{umaWellKnownEndpoint='").append(umaWellknownEndpoint).append('\'');
+        sb.append("{opHost='").append(opHost).append('\'');
         sb.append(", umaPatClientId='").append(umaPatClientId).append('\'');
         sb.append(", umaPatClientSecret='").append(umaPatClientSecret).append('\'');
         sb.append(", trustAll='").append(trustAll).append('\'');

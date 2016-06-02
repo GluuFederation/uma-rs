@@ -18,7 +18,7 @@ public class ConfigurationLoaderTest {
         InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("configuration.json");
         Configuration configuration = ConfigurationLoader.loadFromJson(inputStream);
 
-        assertEquals("https://ce-dev.gluu.org/.well-known/uma-configuration", configuration.getUmaWellknownEndpoint());
+        assertEquals("https://ce-dev.gluu.org", configuration.getOpHost());
         assertEquals("1234-1234", configuration.getUmaPatClientId());
         assertEquals("client_secret", configuration.getUmaPatClientSecret());
     }

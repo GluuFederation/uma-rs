@@ -1,5 +1,5 @@
 {
-    "well_known_endpoint":"https://ce-dev.gluu.org/.well-known/uma-configuration",
+    "op_host":"https://ce-dev.gluu.org",
     "pat_client_id":"1234-1234",
     "pat_client_secret":"client_secret",
     "trust_all":false
