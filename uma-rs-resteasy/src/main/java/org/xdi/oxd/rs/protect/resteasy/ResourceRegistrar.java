@@ -100,7 +100,17 @@ public class ResourceRegistrar {
             LOG.error(ex.getMessage(), ex);
             throw ex;
         }
+    }
 
+    public void putRegisteredResource(RsResource resource, String idOfResourceOnAuthorizationServer) {
+        for (Condition condition : resource.getConditions()) {
+            Key key = new Key(resource.getPath(), condition.getHttpMethods());
+
+            resourceMap.put(key, resource);
+            idMap.put(key, idOfResourceOnAuthorizationServer);
+
+            LOG.debug("Put registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + idOfResourceOnAuthorizationServer);
+        }
     }
 
     public PatProvider getPatProvider() {
