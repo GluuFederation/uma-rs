@@ -9,6 +9,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 public class Configuration {
 
+    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma-configuration";
+
     @JsonProperty(value = "well_known_endpoint")
     private String umaWellknownEndpoint;
     @JsonProperty(value = "pat_client_id")
@@ -57,7 +59,7 @@ public class Configuration {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Configuration");
-        sb.append("{umaWellknownEndpoint='").append(umaWellknownEndpoint).append('\'');
+        sb.append("{umaWellKnownEndpoint='").append(umaWellknownEndpoint).append('\'');
         sb.append(", umaPatClientId='").append(umaPatClientId).append('\'');
         sb.append(", umaPatClientSecret='").append(umaPatClientSecret).append('\'');
         sb.append(", trustAll='").append(trustAll).append('\'');

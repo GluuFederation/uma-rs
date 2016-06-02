@@ -19,11 +19,13 @@ public class ObtainPatProvider implements PatProvider {
     private static final Logger LOG = Logger.getLogger(PatProvider.class);
 
     private final ServiceProvider serviceProvider;
+    private final Configuration configuration;
 
     private Token patToken;
 
-    public ObtainPatProvider(ServiceProvider serviceProvider) {
+    public ObtainPatProvider(ServiceProvider serviceProvider, Configuration configuration) {
         this.serviceProvider = serviceProvider;
+        this.configuration = configuration;
     }
 
     public synchronized String getPatToken() {
@@ -47,7 +49,6 @@ public class ObtainPatProvider implements PatProvider {
     private void obtainPat() {
         try {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
-            Configuration configuration = serviceProvider.getConfiguration();
 
             patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
             LOG.trace("New PAT obtained.");

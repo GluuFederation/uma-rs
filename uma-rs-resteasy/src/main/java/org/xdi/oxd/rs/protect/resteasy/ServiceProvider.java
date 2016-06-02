@@ -24,8 +24,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -36,9 +34,11 @@ import java.security.cert.X509Certificate;
 
 public class ServiceProvider {
 
+    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma-configuration";
+
     private static final Logger LOG = Logger.getLogger(ServiceProvider.class);
 
-    private final Configuration configuration;
+    private final String opHost;
     private final ClientExecutor clientExecutor;
 
     private UmaConfiguration umaConfiguration = null;
@@ -47,19 +47,21 @@ public class ServiceProvider {
     private PermissionRegistrationService permissionRegistrationService;
     private RptStatusService rptStatusService;
 
+    /**
+     * @param opHost opHost (example: https://ophost.com)
+     */
+    public ServiceProvider(String opHost) {
+        this(opHost, true);
+    }
 
-    public ServiceProvider(Configuration configuration) {
-        this(configuration, configuration.isTrustAll() ? new ApacheHttpClient4Executor(createHttpClientTrustAll()) :
+    public ServiceProvider(String opHost, boolean trustAll) {
+        this(opHost, trustAll ? new ApacheHttpClient4Executor(createHttpClientTrustAll()) :
                         new ApacheHttpClient4Executor());
     }
 
-    public ServiceProvider(Configuration configuration, ClientExecutor clientExecutor) {
-        this.configuration = configuration;
+    public ServiceProvider(String opHost, ClientExecutor clientExecutor) {
+        this.opHost = opHost;
         this.clientExecutor = clientExecutor;
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
     }
 
     public synchronized RptStatusService getRptStatusService() {
@@ -71,7 +73,7 @@ public class ServiceProvider {
 
     public synchronized UmaConfigurationService getConfigurationService() {
         if (configurationService == null) {
-            configurationService = UmaClientFactory.instance().createMetaDataConfigurationService(configuration.getUmaWellknownEndpoint(), clientExecutor);
+            configurationService = UmaClientFactory.instance().createMetaDataConfigurationService(opHost + WELL_KNOWN_UMA_PATH, clientExecutor);
         }
         return configurationService;
     }
@@ -97,14 +99,8 @@ public class ServiceProvider {
         return permissionRegistrationService;
     }
 
-
-    public String getAmHost() {
-        try {
-            return new URI(getConfiguration().getUmaWellknownEndpoint()).getHost();
-        } catch (URISyntaxException e) {
-            LOG.error("Failed to parse well-known endpoint from configuration: " + getConfiguration().getUmaWellknownEndpoint(), e);
-        }
-        return "";
+    public String getOpHost() {
+        return opHost;
     }
 
     public ClientExecutor getClientExecutor() {
