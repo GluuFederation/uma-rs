@@ -120,4 +120,12 @@ public class ResourceRegistrar {
     public ServiceProvider getServiceProvider() {
         return serviceProvider;
     }
+
+    public Map<Key, RsResource> getResourceMapCopy() {
+        return Maps.newHashMap(resourceMap);
+    }
+
+    public Map<Key, String> getIdMapCopy() {
+        return Maps.newHashMap(idMap);
+    }
 }
