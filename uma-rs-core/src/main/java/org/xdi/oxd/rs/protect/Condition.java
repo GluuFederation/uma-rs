@@ -41,4 +41,15 @@ public class Condition {
     public void setScopes(List<String> scopes) {
         this.scopes = scopes;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Condition");
+        sb.append("{httpMethods=").append(httpMethods);
+        sb.append(", scopes=").append(scopes);
+        sb.append(", ticketScopes=").append(ticketScopes);
+        sb.append('}');
+        return sb.toString();
+    }
 }
