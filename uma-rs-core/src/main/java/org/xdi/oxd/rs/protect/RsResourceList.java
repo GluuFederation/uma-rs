@@ -30,4 +30,13 @@ public class RsResourceList implements Serializable {
     public void setResources(List<RsResource> resources) {
         this.resources = resources;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("RsResourceList");
+        sb.append("{resources=").append(resources);
+        sb.append('}');
+        return sb.toString();
+    }
 }
