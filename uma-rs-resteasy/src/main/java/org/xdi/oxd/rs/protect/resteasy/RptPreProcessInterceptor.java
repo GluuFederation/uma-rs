@@ -85,11 +85,11 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return (ServerResponse) registerTicketResponse(path, httpMethod);
     }
 
-    private static boolean isGat(String rpt) {
+    public static boolean isGat(String rpt) {
         return !Strings.isNullOrEmpty(rpt) && rpt.startsWith("gat_");
     }
 
-    private boolean hasPermission(RptIntrospectionResponse status, Key key, String httpMethod, boolean isGat) {
+    public boolean hasPermission(RptIntrospectionResponse status, Key key, String httpMethod, boolean isGat) {
         if (status != null && status.getActive()) {
             String resourceSetId = resourceRegistrar.getResourceSetId(key);
             if (Strings.isNullOrEmpty(resourceSetId)) {
