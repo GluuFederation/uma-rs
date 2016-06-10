@@ -30,11 +30,19 @@ public class RsProtector {
 
     public static RsProtector instance(InputStream inputStream) throws IOException {
         try {
-            final RsResourceList resourceList = Jackson.createJsonMapper().readValue(inputStream, RsResourceList.class);
+            final RsResourceList resourceList = read(inputStream);
             return new RsProtector(resourceList.getResources());
         } finally {
             Closeables.closeQuietly(inputStream);
         }
+    }
+
+    public static RsResourceList read(String json) throws IOException {
+        return Jackson.createJsonMapper().readValue(json, RsResourceList.class);
+    }
+
+    public static RsResourceList read(InputStream json) throws IOException {
+        return Jackson.createJsonMapper().readValue(json, RsResourceList.class);
     }
 
     public boolean hasAccess(String path, String httpMethod, String... presentScope) {
