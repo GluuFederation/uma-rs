@@ -189,7 +189,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 LOG.error("Failed to register permission ticket. Response is null.");
             }
         } catch (Exception e) {
-            LOG.error("Failed to register permission.", e);
+            LOG.error("Failed to register permission ticket.", e);
         }
         return Response.status(Response.Status.FORBIDDEN)
                 .header("Warning:", "UMA Authorization Server Unreachable")
