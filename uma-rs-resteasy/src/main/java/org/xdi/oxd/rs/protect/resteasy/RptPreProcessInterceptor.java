@@ -154,20 +154,24 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
     }
 
     public Response registerTicketResponse(String path, String httpMethod) {
-
         Key key = resourceRegistrar.getKey(path, httpMethod);
         if (key == null) {
             LOG.error("Resource is not registered. Path: " + path + ", httpMethod: " + httpMethod + ". Please register it via uma-rs configuration.");
             LOG.error("Skip protection !!!");
             return null;
         }
+        return registerTicketResponse(resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod), resourceRegistrar.getResourceSetId(key));
+    }
 
-        String resourceSetId = resourceRegistrar.getResourceSetId(key);
+    public Response registerTicketResponse(List<String> scopes, String resourceSetId) {
+        Preconditions.checkState(scopes != null && !scopes.isEmpty(), "Scopes must not be empty.");
+        Preconditions.checkState(!Strings.isNullOrEmpty(resourceSetId), "ResourceId must be set.");
+
 
         try {
             UmaPermission permission = new UmaPermission();
             permission.setResourceSetId(resourceSetId);
-            permission.setScopes(resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod));
+            permission.setScopes(scopes);
 
             PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
                     "Bearer " + patProvider.getPatToken(), serviceProvider.getOpHost(), permission);
