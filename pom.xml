@@ -6,7 +6,7 @@
     <groupId>org.xdi</groupId>
     <artifactId>uma-rs</artifactId>
     <packaging>pom</packaging>
-    <version>2.4.4-SNAPSHOT</version>
+    <version>2.4.4.Final</version>
     <name>UMA RS</name>
     <url>http://ox.gluu.org</url>
 
