@@ -174,7 +174,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             permission.setScopes(scopes);
 
             PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
-                    "Bearer " + patProvider.getPatToken(), serviceProvider.getOpHost(), permission);
+                    "Bearer " + patProvider.getPatToken(), serviceProvider.opHostWithoutProtocol(), permission);
             if (ticket != null) {
                 String headerValue = "UMA realm=\"rs\"," +
                         "as_uri=\"" + serviceProvider.getOpHost() + "\"," +

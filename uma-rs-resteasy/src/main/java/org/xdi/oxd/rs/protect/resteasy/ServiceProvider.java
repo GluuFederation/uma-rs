@@ -1,5 +1,6 @@
 package org.xdi.oxd.rs.protect.resteasy;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -100,6 +101,13 @@ public class ServiceProvider {
     }
 
     public String getOpHost() {
+        return opHost;
+    }
+
+    public String opHostWithoutProtocol() {
+        if (StringUtils.contains(opHost, "//")) {
+            return StringUtils.substringAfter(opHost, "//");
+        }
         return opHost;
     }
 
