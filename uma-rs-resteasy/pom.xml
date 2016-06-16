@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>uma-rs-resteasy</artifactId>
     <packaging>jar</packaging>
-    <version>2.4.4-SNAPSHOT</version>
+    <version>2.4.5-SNAPSHOT</version>
     <name>UMA RS Resteasy</name>
     <url>http://ox.gluu.org</url>
 
     <parent>
         <groupId>org.xdi</groupId>
         <artifactId>uma-rs</artifactId>
-        <version>2.4.4-SNAPSHOT</version>
+        <version>2.4.5-SNAPSHOT</version>
     </parent>
 
     <build>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.xdi</groupId>
             <artifactId>oxauth-client</artifactId>
-            <version>2.4.4-SNAPSHOT</version>
+            <version>2.4.4.Final</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
