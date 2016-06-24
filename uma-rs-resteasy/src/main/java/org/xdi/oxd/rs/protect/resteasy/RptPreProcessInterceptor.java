@@ -112,7 +112,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         return false;
     }
 
-    private String getPath(HttpRequest request) {
+    public String getPath(HttpRequest request) {
         if (request.getUri() != null && request.getUri().getAbsolutePath() != null) {
             return request.getUri().getAbsolutePath().getPath();
         }
