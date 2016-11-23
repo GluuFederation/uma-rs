@@ -93,7 +93,7 @@ public class ResourceRegistrar {
                 resourceMap.put(key, resource);
                 idMap.put(key, resourceSetResponse.getId());
 
-                LOG.debug("Registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + resourceSetResponse.getId());
+                LOG.debug("Registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + resourceSetResponse.getId() + ", scopes:" + condition.getScopes());
             }
 
         } catch (ClientResponseFailure ex) {

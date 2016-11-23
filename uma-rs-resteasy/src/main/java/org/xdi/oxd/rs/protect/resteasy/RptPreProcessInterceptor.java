@@ -173,6 +173,8 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             permission.setResourceSetId(resourceSetId);
             permission.setScopes(scopes);
 
+            LOG.debug("Registering ticket ... Permission: " + permission);
+
             PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
                     "Bearer " + patProvider.getPatToken(), serviceProvider.opHostWithoutProtocol(), permission);
             if (ticket != null) {
