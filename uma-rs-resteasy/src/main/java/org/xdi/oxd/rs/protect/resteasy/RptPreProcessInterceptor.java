@@ -160,10 +160,10 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             LOG.error("Skip protection !!!");
             return null;
         }
-        return registerTicketResponse(resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod), resourceRegistrar.getResourceSetId(key));
+        return registerTicketResponse(resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod), resourceRegistrar.getResourceSetId(key), true);
     }
 
-    public Response registerTicketResponse(List<String> scopes, String resourceSetId) {
+    public Response registerTicketResponse(List<String> scopes, String resourceSetId, boolean retry) {
         Preconditions.checkState(scopes != null && !scopes.isEmpty(), "Scopes must not be empty.");
         Preconditions.checkState(!Strings.isNullOrEmpty(resourceSetId), "ResourceId must be set.");
 
@@ -188,6 +188,12 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             } else {
                 LOG.error("Failed to register permission ticket. Response is null.");
             }
+        } catch (ClientResponseFailure e) {
+            if (e.getResponse().getStatus() == 401 && retry) {
+                patProvider.clearPat();
+                return registerTicketResponse(scopes, resourceSetId, false);
+            }
+            LOG.error("Failed to register permission ticket.", e);
         } catch (Exception e) {
             LOG.error("Failed to register permission ticket.", e);
         }

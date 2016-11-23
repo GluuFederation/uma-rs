@@ -9,6 +9,9 @@ import org.xdi.oxauth.model.uma.UmaScopeType;
 import org.xdi.oxauth.model.uma.wrapper.Token;
 import org.xdi.oxauth.model.util.Util;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * @author Yuriy Zabrovarnyy
  * @version 0.9, 02/06/2016
@@ -22,6 +25,7 @@ public class ObtainPatProvider implements PatProvider {
     private final Configuration configuration;
 
     private Token patToken;
+    private volatile Date createdAt = new Date(0);
 
     public ObtainPatProvider(ServiceProvider serviceProvider, Configuration configuration) {
         this.serviceProvider = serviceProvider;
@@ -31,7 +35,17 @@ public class ObtainPatProvider implements PatProvider {
     public synchronized String getPatToken() {
         if (patToken == null) {
             obtainPat();
+        } else {
+            Calendar expiredAt = Calendar.getInstance();
+            expiredAt.setTime(createdAt);
+            expiredAt.add(Calendar.SECOND, patToken.getExpiresIn());
+
+            boolean isExpired = expiredAt.getTime().before(createdAt);
+            if (isExpired) {
+                obtainPat();
+            }
         }
+
         Preconditions.checkNotNull(patToken);
         return patToken.getAccessToken();
     }
@@ -51,8 +65,10 @@ public class ObtainPatProvider implements PatProvider {
             UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
 
             patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
+            createdAt = new Date();
             LOG.trace("New PAT obtained.");
         } catch (Exception e) {
+            createdAt = new Date(0);
             LOG.error("Failed to obtain PAT. " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
