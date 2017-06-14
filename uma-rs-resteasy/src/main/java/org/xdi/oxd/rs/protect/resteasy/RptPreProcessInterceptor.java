@@ -5,7 +5,7 @@ import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.core.ResourceMethod;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -45,7 +45,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
     }
 
     @Override
-    public ServerResponse preProcess(HttpRequest request, ResourceMethod method) throws Failure, WebApplicationException {
+    public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker invoker) throws Failure, WebApplicationException {
 
         String path = getPath(request);
         String httpMethod = request.getHttpMethod();
