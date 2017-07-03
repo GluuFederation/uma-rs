@@ -4,12 +4,11 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * @author Yuriy Zabrovarnyy
- * @version 0.9, 19/04/2016
  */
 
 public class Configuration {
 
-    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma-configuration";
+    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma2-configuration";
 
     @JsonProperty(value = "op_host")
     private String opHost;

@@ -30,12 +30,11 @@ import java.security.cert.X509Certificate;
 
 /**
  * @author Yuriy Zabrovarnyy
- * @version 0.9, 19/04/2016
  */
 
 public class ServiceProvider {
 
-    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma-configuration";
+    public static final String WELL_KNOWN_UMA_PATH = "/.well-known/uma2-configuration";
 
     private static final Logger LOG = Logger.getLogger(ServiceProvider.class);
 
