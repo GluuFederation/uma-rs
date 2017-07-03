@@ -13,6 +13,7 @@ import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.xdi.oxauth.model.uma.PermissionTicket;
 import org.xdi.oxauth.model.uma.RptIntrospectionResponse;
 import org.xdi.oxauth.model.uma.UmaPermission;
+import org.xdi.oxauth.model.uma.UmaPermissionList;
 import org.xdi.oxd.rs.protect.Jackson;
 import org.xdi.util.StringHelper;
 
@@ -99,7 +100,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
             if (status.getPermissions() != null) {
                 for (UmaPermission permission : status.getPermissions()) {
-                    if (permission.getResourceSetId() != null && permission.getResourceSetId().equals(resourceSetId) &&
+                    if (permission.getResourceId() != null && permission.getResourceId().equals(resourceSetId) &&
                             resourceRegistrar.getProtector().hasAccess(key.getPath(), httpMethod, permission.getScopes())) {
                         return true;
                     }
@@ -142,7 +143,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
             LOG.debug("Request RPT " + rpt + " status...");
 
-            final RptIntrospectionResponse status = serviceProvider.getRptStatusService().requestRptStatus("Bearer " + patProvider.getPatToken(), rpt, "");
+            final RptIntrospectionResponse status = serviceProvider.getRptIntrospectionService().requestRptStatus("Bearer " + patProvider.getPatToken(), rpt, "");
             if (status != null) {
                 LOG.debug("RPT status: " + Jackson.asJsonSilently(status));
                 return status;
@@ -170,11 +171,11 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
 
         try {
             UmaPermission permission = new UmaPermission();
-            permission.setResourceSetId(resourceSetId);
+            permission.setResourceId(resourceSetId);
             permission.setScopes(scopes);
 
-            PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionRegistrationService().registerResourceSetPermission(
-                    "Bearer " + patProvider.getPatToken(), serviceProvider.opHostWithoutProtocol(), permission);
+            PermissionTicket ticket = resourceRegistrar.getServiceProvider().getPermissionService().registerPermission(
+                    "Bearer " + patProvider.getPatToken(), UmaPermissionList.instance(permission));
             if (ticket != null) {
                 String headerValue = "UMA realm=\"rs\"," +
                         "as_uri=\"" + serviceProvider.getOpHost() + "\"," +

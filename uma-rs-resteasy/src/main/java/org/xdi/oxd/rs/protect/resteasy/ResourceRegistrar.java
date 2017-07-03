@@ -6,8 +6,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.xdi.oxauth.model.uma.ResourceSet;
-import org.xdi.oxauth.model.uma.ResourceSetResponse;
+import org.xdi.oxauth.model.uma.UmaResource;
+import org.xdi.oxauth.model.uma.UmaResourceResponse;
 import org.xdi.oxd.rs.protect.Condition;
 import org.xdi.oxd.rs.protect.RsProtector;
 import org.xdi.oxd.rs.protect.RsResource;
@@ -82,11 +82,11 @@ public class ResourceRegistrar {
             for (Condition condition : resource.getConditions()) {
                 Key key = new Key(resource.getPath(), condition.getHttpMethods());
 
-                ResourceSet resourceSet = new ResourceSet();
+                UmaResource resourceSet = new UmaResource();
                 resourceSet.setName(key.getResourceName());
                 resourceSet.setScopes(condition.getScopes());
 
-                ResourceSetResponse resourceSetResponse = serviceProvider.getResourceSetRegistrationService().addResourceSet("Bearer " + patProvider.getPatToken(), resourceSet);
+                UmaResourceResponse resourceSetResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resourceSet);
 
                 Preconditions.checkNotNull(resourceSetResponse.getId(), "Resource set ID can not be null.");
 

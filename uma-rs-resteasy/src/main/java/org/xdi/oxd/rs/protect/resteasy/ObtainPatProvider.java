@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.xdi.oxauth.client.TokenClient;
 import org.xdi.oxauth.client.TokenResponse;
-import org.xdi.oxauth.model.uma.UmaConfiguration;
+import org.xdi.oxauth.model.uma.UmaMetadata;
 import org.xdi.oxauth.model.uma.UmaScopeType;
 import org.xdi.oxauth.model.uma.wrapper.Token;
 import org.xdi.oxauth.model.util.Util;
@@ -48,9 +48,9 @@ public class ObtainPatProvider implements PatProvider {
 
     private void obtainPat() {
         try {
-            UmaConfiguration umaConfiguration = serviceProvider.getUmaConfiguration();
+            UmaMetadata umaMetadata = serviceProvider.getUmaMetadata();
 
-            patToken = requestPat(umaConfiguration.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
+            patToken = requestPat(umaMetadata.getTokenEndpoint(), configuration.getUmaPatClientId(), configuration.getUmaPatClientSecret());
             LOG.trace("New PAT obtained.");
         } catch (Exception e) {
             LOG.error("Failed to obtain PAT. " + e.getMessage(), e);

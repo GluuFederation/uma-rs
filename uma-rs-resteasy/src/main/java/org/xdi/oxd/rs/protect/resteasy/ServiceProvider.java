@@ -14,12 +14,12 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
-import org.xdi.oxauth.client.uma.PermissionRegistrationService;
-import org.xdi.oxauth.client.uma.ResourceSetRegistrationService;
-import org.xdi.oxauth.client.uma.RptStatusService;
 import org.xdi.oxauth.client.uma.UmaClientFactory;
-import org.xdi.oxauth.client.uma.UmaConfigurationService;
-import org.xdi.oxauth.model.uma.UmaConfiguration;
+import org.xdi.oxauth.client.uma.UmaMetadataService;
+import org.xdi.oxauth.client.uma.UmaPermissionService;
+import org.xdi.oxauth.client.uma.UmaResourceService;
+import org.xdi.oxauth.client.uma.UmaRptIntrospectionService;
+import org.xdi.oxauth.model.uma.UmaMetadata;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -42,11 +42,11 @@ public class ServiceProvider {
     private final String opHost;
     private final ClientExecutor clientExecutor;
 
-    private UmaConfiguration umaConfiguration = null;
-    private UmaConfigurationService configurationService = null;
-    private ResourceSetRegistrationService resourceSetRegistrationService = null;
-    private PermissionRegistrationService permissionRegistrationService;
-    private RptStatusService rptStatusService;
+    private UmaMetadata umaMetadata = null;
+    private UmaMetadataService metadataService = null;
+    private UmaResourceService resourceService = null;
+    private UmaPermissionService permissionService;
+    private UmaRptIntrospectionService rptIntrospectionService;
 
     /**
      * @param opHost opHost (example: https://ophost.com)
@@ -65,39 +65,39 @@ public class ServiceProvider {
         this.clientExecutor = clientExecutor;
     }
 
-    public synchronized RptStatusService getRptStatusService() {
-        if (rptStatusService == null) {
-            rptStatusService = UmaClientFactory.instance().createRptStatusService(umaConfiguration, clientExecutor);
+    public synchronized UmaRptIntrospectionService getRptIntrospectionService() {
+        if (rptIntrospectionService == null) {
+            rptIntrospectionService = UmaClientFactory.instance().createRptStatusService(umaMetadata, clientExecutor);
         }
-        return rptStatusService;
+        return rptIntrospectionService;
     }
 
-    public synchronized UmaConfigurationService getConfigurationService() {
-        if (configurationService == null) {
-            configurationService = UmaClientFactory.instance().createMetaDataConfigurationService(opHost + WELL_KNOWN_UMA_PATH, clientExecutor);
+    public synchronized UmaMetadataService getMetadataService() {
+        if (metadataService == null) {
+            metadataService = UmaClientFactory.instance().createMetadataService(opHost + WELL_KNOWN_UMA_PATH, clientExecutor);
         }
-        return configurationService;
+        return metadataService;
     }
 
-    public synchronized UmaConfiguration getUmaConfiguration() {
-        if (umaConfiguration == null) {
-            umaConfiguration = getConfigurationService().getMetadataConfiguration();
+    public synchronized UmaMetadata getUmaMetadata() {
+        if (umaMetadata == null) {
+            umaMetadata = getMetadataService().getMetadata();
         }
-        return umaConfiguration;
+        return umaMetadata;
     }
 
-    public synchronized ResourceSetRegistrationService getResourceSetRegistrationService() {
-        if (resourceSetRegistrationService == null) {
-            resourceSetRegistrationService = UmaClientFactory.instance().createResourceSetRegistrationService(getUmaConfiguration(), clientExecutor);
+    public synchronized UmaResourceService getResourceService() {
+        if (resourceService == null) {
+            resourceService = UmaClientFactory.instance().createResourceService(getUmaMetadata(), clientExecutor);
         }
-        return resourceSetRegistrationService;
+        return resourceService;
     }
 
-    public synchronized PermissionRegistrationService getPermissionRegistrationService() {
-        if (permissionRegistrationService == null) {
-            permissionRegistrationService = UmaClientFactory.instance().createResourceSetPermissionRegistrationService(getUmaConfiguration(), clientExecutor);
+    public synchronized UmaPermissionService getPermissionService() {
+        if (permissionService == null) {
+            permissionService = UmaClientFactory.instance().createPermissionService(getUmaMetadata(), clientExecutor);
         }
-        return permissionRegistrationService;
+        return permissionService;
     }
 
     public String getOpHost() {
