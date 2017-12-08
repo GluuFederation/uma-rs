@@ -86,8 +86,8 @@ public class ResourceRegistrar {
                 UmaResource resource = new UmaResource();
                 resource.setName(key.getResourceName());
 
-                if (JsonLogicNodeParser.isNodeValid(condition.getScopeExpression())) {
-                    resource.setScopeExpression(condition.getScopeExpression());
+                if (condition.getScopeExpression() != null && JsonLogicNodeParser.isNodeValid(condition.getScopeExpression().toString())) {
+                    resource.setScopeExpression(condition.getScopeExpression().toString());
                 } else {
                     resource.setScopes(condition.getScopes());
                 }

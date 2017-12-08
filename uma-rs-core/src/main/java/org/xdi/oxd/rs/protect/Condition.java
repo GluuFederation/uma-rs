@@ -1,5 +1,6 @@
 package org.xdi.oxd.rs.protect;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -17,7 +18,7 @@ public class Condition {
     @JsonProperty(value = "scopes")
     List<String> scopes;
     @JsonProperty(value = "scope_expression")
-    String scopeExpression;
+    JsonNode scopeExpression;
     @JsonProperty(value = "ticketScopes")
     List<String> ticketScopes;
 
@@ -45,11 +46,11 @@ public class Condition {
         this.scopes = scopes;
     }
 
-    public String getScopeExpression() {
+    public JsonNode getScopeExpression() {
         return scopeExpression;
     }
 
-    public void setScopeExpression(String scopeExpression) {
+    public void setScopeExpression(JsonNode scopeExpression) {
         this.scopeExpression = scopeExpression;
     }
 
