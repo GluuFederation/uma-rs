@@ -1,6 +1,7 @@
 package org.xdi.oxd.rs.protect;
 
 import com.google.common.collect.Maps;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.xdi.oxauth.model.uma.JsonLogicNode;
@@ -44,6 +45,10 @@ public class RsResource implements Serializable {
         return getConditionMap().get(httpMethod).getScopes();
     }
 
+    public JsonNode getScopeExpression(String httpMethod) {
+        return getConditionMap().get(httpMethod).getScopeExpression();
+    }
+
     public List<String> getScopesForTicket(String httpMethod) {
         Condition condition = getConditionMap().get(httpMethod);
         final JsonLogicNode node = JsonLogicNodeParser.parseNode(condition.getScopeExpression().toString());
@@ -54,7 +59,7 @@ public class RsResource implements Serializable {
                 condition.getTicketScopes() : condition.getScopes();
     }
 
-    private Map<String, Condition> getConditionMap() {
+    public Map<String, Condition> getConditionMap() {
         if (httpMethodToCondition == null) {
             initMap();
         }
