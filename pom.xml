@@ -15,6 +15,7 @@
         <maven.min-version>3.0.3</maven.min-version>
         <jackson.version>1.9.9</jackson.version>
         <slf4j.version>1.7.11</slf4j.version>
+        <oxauth.version>3.1.2-SNAPSHOT</oxauth.version>
     </properties>
 
     <prerequisites>
@@ -129,6 +130,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.xdi</groupId>
+                <artifactId>oxauth-model</artifactId>
+                <version>${oxauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xdi</groupId>
+                <artifactId>oxauth-client</artifactId>
+                <version>${oxauth.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>

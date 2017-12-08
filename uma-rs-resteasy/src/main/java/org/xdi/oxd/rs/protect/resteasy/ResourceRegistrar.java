@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
+import org.xdi.oxauth.model.uma.JsonLogicNodeParser;
 import org.xdi.oxauth.model.uma.UmaResource;
 import org.xdi.oxauth.model.uma.UmaResourceResponse;
 import org.xdi.oxd.rs.protect.Condition;
@@ -77,23 +78,28 @@ public class ResourceRegistrar {
         return getResourceSetId(getKey(path, httpMethod));
     }
 
-    private void register(RsResource resource) {
+    private void register(RsResource rsResource) {
         try {
-            for (Condition condition : resource.getConditions()) {
-                Key key = new Key(resource.getPath(), condition.getHttpMethods());
+            for (Condition condition : rsResource.getConditions()) {
+                Key key = new Key(rsResource.getPath(), condition.getHttpMethods());
 
-                UmaResource resourceSet = new UmaResource();
-                resourceSet.setName(key.getResourceName());
-                resourceSet.setScopes(condition.getScopes());
+                UmaResource resource = new UmaResource();
+                resource.setName(key.getResourceName());
 
-                UmaResourceResponse resourceSetResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resourceSet);
+                if (JsonLogicNodeParser.isNodeValid(condition.getScopeExpression())) {
+                    resource.setScopeExpression(condition.getScopeExpression());
+                } else {
+                    resource.setScopes(condition.getScopes());
+                }
 
-                Preconditions.checkNotNull(resourceSetResponse.getId(), "Resource set ID can not be null.");
+                UmaResourceResponse resourceResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resource);
 
-                resourceMap.put(key, resource);
-                idMap.put(key, resourceSetResponse.getId());
+                Preconditions.checkNotNull(resourceResponse.getId(), "Resource ID can not be null.");
 
-                LOG.debug("Registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + resourceSetResponse.getId());
+                resourceMap.put(key, rsResource);
+                idMap.put(key, resourceResponse.getId());
+
+                LOG.debug("Registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + resourceResponse.getId());
             }
 
         } catch (ClientResponseFailure ex) {

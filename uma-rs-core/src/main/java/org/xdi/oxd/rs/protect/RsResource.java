@@ -1,7 +1,10 @@
 package org.xdi.oxd.rs.protect;
 
 import com.google.common.collect.Maps;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.xdi.oxauth.model.uma.JsonLogicNode;
+import org.xdi.oxauth.model.uma.JsonLogicNodeParser;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.Map;
  * @author Yuriy Zabrovarnyy
  * @version 0.9, 24/12/2015
  */
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RsResource implements Serializable {
 
     @JsonProperty(value = "path")
@@ -41,8 +44,12 @@ public class RsResource implements Serializable {
         return getConditionMap().get(httpMethod).getScopes();
     }
 
-    public List<String> scopesForTicket(String httpMethod) {
+    public List<String> getScopesForTicket(String httpMethod) {
         Condition condition = getConditionMap().get(httpMethod);
+        final JsonLogicNode node = JsonLogicNodeParser.parseNode(condition.getScopeExpression());
+        if (node != null) {
+            return node.getData(); // return all scopes defined in "data" of json object
+        }
         return condition.getTicketScopes() != null && !condition.getTicketScopes().isEmpty() ?
                 condition.getTicketScopes() : condition.getScopes();
     }
