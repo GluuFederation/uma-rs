@@ -51,9 +51,11 @@ public class RsResource implements Serializable {
 
     public List<String> getScopesForTicket(String httpMethod) {
         Condition condition = getConditionMap().get(httpMethod);
-        final JsonLogicNode node = JsonLogicNodeParser.parseNode(condition.getScopeExpression().toString());
-        if (node != null) {
-            return node.getData(); // return all scopes defined in "data" of json object
+        if (condition.getScopeExpression() != null) {
+            final JsonLogicNode node = JsonLogicNodeParser.parseNode(condition.getScopeExpression().toString());
+            if (node != null) {
+                return node.getData(); // return all scopes defined in "data" of json object
+            }
         }
         return condition.getTicketScopes() != null && !condition.getTicketScopes().isEmpty() ?
                 condition.getTicketScopes() : condition.getScopes();
