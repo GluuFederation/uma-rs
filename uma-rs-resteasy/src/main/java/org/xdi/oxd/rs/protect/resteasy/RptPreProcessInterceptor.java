@@ -163,7 +163,11 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         }
         final List<String> ticketScopes = resourceRegistrar.getRsResource(key).getScopesForTicket(httpMethod);
         LOG.trace("Ticket scopes: " + ticketScopes);
-        return registerTicketResponse(ticketScopes, resourceRegistrar.getResourceSetId(key), true);
+        return registerTicketResponse(ticketScopes, resourceRegistrar.getResourceSetId(key));
+    }
+
+    public Response registerTicketResponse(List<String> scopes, String resourceSetId) {
+        return registerTicketResponse(scopes, resourceSetId, true);
     }
 
     public Response registerTicketResponse(List<String> scopes, String resourceSetId, boolean retry) {
