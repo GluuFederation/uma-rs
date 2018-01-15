@@ -202,7 +202,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 patProvider.clearPat();
                 if (retry) {
                     LOG.debug("Re-try register the ticket.");
-                    registerTicketResponse(scopes, resourceSetId, false);
+                    return registerTicketResponse(scopes, resourceSetId, false);
                 }
             } else {
                 throw e;
