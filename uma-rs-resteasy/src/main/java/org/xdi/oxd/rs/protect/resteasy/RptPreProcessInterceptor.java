@@ -160,10 +160,16 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             LOG.error("Skip protection !!!");
             return null;
         }
-        return registerTicketResponse(resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod), resourceRegistrar.getResourceSetId(key));
+        final List<String> ticketScopes = resourceRegistrar.getRsResource(key).scopesForTicket(httpMethod);
+        LOG.trace("Ticket scopes: " + ticketScopes);
+        return registerTicketResponse(ticketScopes, resourceRegistrar.getResourceSetId(key), true);
     }
 
     public Response registerTicketResponse(List<String> scopes, String resourceSetId) {
+        return registerTicketResponse(scopes, resourceSetId, true);
+    }
+
+    public Response registerTicketResponse(List<String> scopes, String resourceSetId, boolean retry) {
         Preconditions.checkState(scopes != null && !scopes.isEmpty(), "Scopes must not be empty.");
         Preconditions.checkState(!Strings.isNullOrEmpty(resourceSetId), "ResourceId must be set.");
 
@@ -187,6 +193,18 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                         .build();
             } else {
                 LOG.error("Failed to register permission ticket. Response is null.");
+            }
+        } catch (ClientResponseFailure e) {
+            LOG.debug("Failed to register ticket. Entity: " + e.getResponse().getEntity(String.class) + ", status: " + e.getResponse().getStatus(), e);
+            if (e.getResponse().getStatus() == 400 || e.getResponse().getStatus() == 401) {
+                LOG.debug("Try maybe PAT is lost on AS, force refresh PAT and request ticket again ...");
+                patProvider.clearPat();
+                if (retry) {
+                    LOG.debug("Re-try to register the ticket.");
+                    registerTicketResponse(scopes, resourceSetId, false);
+                }
+            } else {
+                throw e;
             }
         } catch (Exception e) {
             LOG.error("Failed to register permission ticket.", e);
