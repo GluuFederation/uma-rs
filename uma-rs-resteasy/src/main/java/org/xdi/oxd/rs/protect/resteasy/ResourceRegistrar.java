@@ -88,6 +88,7 @@ public class ResourceRegistrar {
 
                 if (condition.getScopeExpression() != null && JsonLogicNodeParser.isNodeValid(condition.getScopeExpression().toString())) {
                     resource.setScopeExpression(condition.getScopeExpression().toString());
+                    resource.setScopes(JsonLogicNodeParser.parseNode(condition.getScopeExpression().toString()).getData());
                 } else {
                     resource.setScopes(condition.getScopes());
                 }
