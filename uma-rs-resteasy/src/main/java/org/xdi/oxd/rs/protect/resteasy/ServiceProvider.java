@@ -81,6 +81,7 @@ public class ServiceProvider {
     public synchronized UmaMetadata getUmaMetadata() {
         if (umaMetadata == null) {
             umaMetadata = getMetadataService().getMetadata();
+            LOG.trace("UMA discovery:" + umaMetadata);
         }
         return umaMetadata;
     }
