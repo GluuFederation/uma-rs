@@ -18,7 +18,7 @@ public class Condition {
     @JsonProperty(value = "scopes")
     List<String> scopes;
     @JsonProperty(value = "scope_expression")
-    JsonNode scopeExpression;
+    JsonNode scope_expression;
     @JsonProperty(value = "ticketScopes")
     List<String> ticketScopes;
 
@@ -47,11 +47,11 @@ public class Condition {
     }
 
     public JsonNode getScopeExpression() {
-        return scopeExpression;
+        return scope_expression;
     }
 
     public void setScopeExpression(JsonNode scopeExpression) {
-        this.scopeExpression = scopeExpression;
+        this.scope_expression = scopeExpression;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class Condition {
         sb.append("Condition");
         sb.append("{httpMethods=").append(httpMethods);
         sb.append(", scopes=").append(scopes);
-        sb.append(", scopeExpression=").append(scopeExpression);
+        sb.append(", scope_expression=").append(scope_expression);
         sb.append(", ticketScopes=").append(ticketScopes);
         sb.append('}');
         return sb.toString();
