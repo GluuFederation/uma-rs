@@ -1,5 +1,7 @@
 package org.xdi.oxd.rs.protect;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.List;
@@ -8,13 +10,15 @@ import java.util.List;
  * @author Yuriy Zabrovarnyy
  * @version 0.9, 18/04/2016
  */
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Condition {
 
     @JsonProperty(value = "httpMethods")
     List<String> httpMethods;
     @JsonProperty(value = "scopes")
     List<String> scopes;
+    @JsonProperty(value = "scope_expression")
+    JsonNode scopeExpression;
     @JsonProperty(value = "ticketScopes")
     List<String> ticketScopes;
 
@@ -42,12 +46,21 @@ public class Condition {
         this.scopes = scopes;
     }
 
+    public JsonNode getScopeExpression() {
+        return scopeExpression;
+    }
+
+    public void setScopeExpression(JsonNode scopeExpression) {
+        this.scopeExpression = scopeExpression;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Condition");
         sb.append("{httpMethods=").append(httpMethods);
         sb.append(", scopes=").append(scopes);
+        sb.append(", scopeExpression=").append(scopeExpression);
         sb.append(", ticketScopes=").append(ticketScopes);
         sb.append('}');
         return sb.toString();

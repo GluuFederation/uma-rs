@@ -15,6 +15,7 @@
         <maven.min-version>3.0.3</maven.min-version>
         <jackson.version>1.9.9</jackson.version>
         <slf4j.version>1.7.11</slf4j.version>
+        <oxauth.version>3.1.3.Final</oxauth.version>
     </properties>
 
     <prerequisites>
@@ -130,6 +131,16 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.xdi</groupId>
+                <artifactId>oxauth-model</artifactId>
+                <version>${oxauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xdi</groupId>
+                <artifactId>oxauth-client</artifactId>
+                <version>${oxauth.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>17.0</version>
@@ -172,5 +183,34 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>gluu</id>
+            <name>Gluu repository</name>
+            <url>http://ox.gluu.org/maven</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+        <repository>
+            <id>bouncycastle</id>
+            <name>Bouncy Castle</name>
+            <url>http://repo2.maven.org/maven2/org/bouncycastle</url>
+        </repository>
+        <repository>
+            <id>local</id>
+            <name>oxd local repository</name>
+            <url>file://${project.basedir}/../oxd-repo</url>
+        </repository>
+    </repositories>
 
 </project>
