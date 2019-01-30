@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
@@ -73,7 +74,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             if (e instanceof ClientResponseFailure) {
                 LOG.error("Entity: " + ((((ClientResponseFailure) e).getResponse()).getEntity(String.class)));
             }
-            return (ServerResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            return new ServerResponse((BuiltResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
         }
 
         // If the client's request at the protected resource has no RPT,
@@ -83,7 +84,7 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         // the corresponding authorization server.
         LOG.debug("Client does not present valid RPT. Registering permission ticket ...");
 
-        return (ServerResponse) registerTicketResponse(path, httpMethod);
+        return new ServerResponse((BuiltResponse) registerTicketResponse(path, httpMethod));
     }
 
     public static boolean isGat(String rpt) {
