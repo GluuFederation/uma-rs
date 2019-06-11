@@ -1,6 +1,7 @@
 package org.gluu.oxd.rs.protect.resteasy;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Yuriy Zabrovarnyy

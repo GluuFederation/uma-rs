@@ -1,9 +1,9 @@
 package org.gluu.oxd.rs.protect;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.gluu.oxauth.model.uma.JsonLogicNode;
 import org.gluu.oxauth.model.uma.JsonLogicNodeParser;
 

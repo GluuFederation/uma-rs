@@ -1,11 +1,7 @@
 package org.gluu.oxd.rs.protect;
 
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +24,8 @@ public class Jackson {
             final AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
 
             final ObjectMapper mapper = new ObjectMapper();
-            final DeserializationConfig deserializationConfig = mapper.getDeserializationConfig().withAnnotationIntrospector(jackson);
-            final SerializationConfig serializationConfig = mapper.getSerializationConfig().withAnnotationIntrospector(jackson);
+            final DeserializationConfig deserializationConfig = mapper.getDeserializationConfig().with(jackson);
+            final SerializationConfig serializationConfig = mapper.getSerializationConfig().with(jackson);
             if (deserializationConfig != null && serializationConfig != null) {
                 // do nothing for now
             }
@@ -55,7 +51,7 @@ public class Jackson {
      * @throws java.io.IOException if io problems occurs
      */
     public static String asJson(Object p_object) throws IOException {
-        final ObjectMapper mapper = createJsonMapper().configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, false);
+        final ObjectMapper mapper = createJsonMapper().configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         return mapper.writeValueAsString(p_object);
     }
 
@@ -69,7 +65,7 @@ public class Jackson {
     }
 
     public static String asPrettyJson(Object p_object) throws IOException {
-        final ObjectMapper mapper = createJsonMapper().configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, false);
+        final ObjectMapper mapper = createJsonMapper().configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         final ObjectWriter writer = mapper.writer().withDefaultPrettyPrinter();
         return writer.writeValueAsString(p_object);
     }
