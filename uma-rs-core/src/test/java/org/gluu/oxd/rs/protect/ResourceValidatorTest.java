@@ -5,8 +5,9 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 
 /**
  * @author Yuriy Zabrovarnyy
