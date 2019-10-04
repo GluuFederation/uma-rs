@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 import java.io.InputStream;
 
-import static junit.framework.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 /**
  * @author Yuriy Zabrovarnyy
