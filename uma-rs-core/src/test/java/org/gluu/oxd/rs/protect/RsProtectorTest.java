@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static junit.framework.Assert.*;
+import static org.testng.Assert.*;
 
 /**
  * @author Yuriy Zabrovarnyy
