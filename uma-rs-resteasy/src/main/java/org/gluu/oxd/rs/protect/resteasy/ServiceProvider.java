@@ -1,32 +1,34 @@
 package org.gluu.oxd.rs.protect.resteasy;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.ClientExecutor;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.gluu.oxauth.client.uma.UmaClientFactory;
 import org.gluu.oxauth.client.uma.UmaMetadataService;
 import org.gluu.oxauth.client.uma.UmaPermissionService;
 import org.gluu.oxauth.client.uma.UmaResourceService;
 import org.gluu.oxauth.client.uma.UmaRptIntrospectionService;
+import org.gluu.oxauth.client.uma.UmaTokenService;
 import org.gluu.oxauth.model.uma.UmaMetadata;
-
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
-import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -39,9 +41,12 @@ public class ServiceProvider {
     private static final Logger LOG = Logger.getLogger(ServiceProvider.class);
 
     private final String opHost;
-    private final ClientExecutor clientExecutor;
+
+    private ClientHttpEngine engine;
+	private ApacheHttpClient4Executor executor;
 
     private UmaMetadata umaMetadata = null;
+	private UmaTokenService tokenService;
     private UmaMetadataService metadataService = null;
     private UmaResourceService resourceService = null;
     private UmaPermissionService permissionService;
@@ -49,31 +54,34 @@ public class ServiceProvider {
 
     /**
      * @param opHost opHost (example: https://ophost.com)
+     * @throws KeyStoreException 
+     * @throws NoSuchAlgorithmException 
+     * @throws KeyManagementException 
      */
-    public ServiceProvider(String opHost) {
+    public ServiceProvider(String opHost) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
         this(opHost, true);
     }
 
-    public ServiceProvider(String opHost, boolean trustAll) {
-        this(opHost, trustAll ? new ApacheHttpClient4Executor(createHttpClientTrustAll()) :
-                        new ApacheHttpClient4Executor());
+    public ServiceProvider(String opHost, boolean trustAll) throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        this(opHost, trustAll ? createAcceptSelfSignedCertificateClient() : createClient());
     }
 
-    public ServiceProvider(String opHost, ClientExecutor clientExecutor) {
+    public ServiceProvider(String opHost, HttpClient httpClient) {
         this.opHost = opHost;
-        this.clientExecutor = clientExecutor;
+        this.engine = new ApacheHttpClient4Engine(httpClient);
+        this.executor = new ApacheHttpClient4Executor(httpClient);
     }
 
     public synchronized UmaRptIntrospectionService getRptIntrospectionService() {
         if (rptIntrospectionService == null) {
-            rptIntrospectionService = UmaClientFactory.instance().createRptStatusService(umaMetadata, clientExecutor);
+            rptIntrospectionService = UmaClientFactory.instance().createRptStatusService(umaMetadata, engine);
         }
         return rptIntrospectionService;
     }
 
     public synchronized UmaMetadataService getMetadataService() {
         if (metadataService == null) {
-            metadataService = UmaClientFactory.instance().createMetadataService(opHost + WELL_KNOWN_UMA_PATH, clientExecutor);
+            metadataService = UmaClientFactory.instance().createMetadataService(opHost + WELL_KNOWN_UMA_PATH, engine);
         }
         return metadataService;
     }
@@ -88,16 +96,26 @@ public class ServiceProvider {
 
     public synchronized UmaResourceService getResourceService() {
         if (resourceService == null) {
-            resourceService = UmaClientFactory.instance().createResourceService(getUmaMetadata(), clientExecutor);
+            resourceService = UmaClientFactory.instance().createResourceService(getUmaMetadata(), engine);
         }
+
         return resourceService;
     }
 
     public synchronized UmaPermissionService getPermissionService() {
         if (permissionService == null) {
-            permissionService = UmaClientFactory.instance().createPermissionService(getUmaMetadata(), clientExecutor);
+            permissionService = UmaClientFactory.instance().createPermissionService(getUmaMetadata(), engine);
         }
+
         return permissionService;
+    }
+
+    public synchronized UmaTokenService getTokenService() {
+        if (tokenService == null) {
+        	tokenService = UmaClientFactory.instance().createTokenService(getUmaMetadata(), engine);
+        }
+
+        return tokenService;
     }
 
     public String getOpHost() {
@@ -111,44 +129,51 @@ public class ServiceProvider {
         return opHost;
     }
 
-    public ClientExecutor getClientExecutor() {
-        return clientExecutor;
+	public ApacheHttpClient4Executor getClientExecutor() {
+		return executor;
+	}
+
+	private static HttpClient createClient() {
+	    return createClient(null);
+	}
+
+    private static HttpClient createAcceptSelfSignedCertificateClient()
+            throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+        SSLConnectionSocketFactory connectionFactory = createAcceptSelfSignedSocketFactory();
+
+	    return createClient(connectionFactory);
     }
 
-    public static HttpClient createHttpClientTrustAll() {
-        try {
-            SSLSocketFactory sf = new SSLSocketFactory(new TrustStrategy() {
-                @Override
-                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                    return true;
-                }
-            }, new X509HostnameVerifier() {
-                @Override
-                public void verify(String host, SSLSocket ssl) throws IOException {
-                }
+	private static HttpClient createClient(SSLConnectionSocketFactory connectionFactory) {
+		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+		HttpClientBuilder httClientBuilder = HttpClients.custom();
+		if (connectionFactory != null) {
+			httClientBuilder = httClientBuilder.setSSLSocketFactory(connectionFactory);
+		}
 
-                @Override
-                public void verify(String host, X509Certificate cert) throws SSLException {
-                }
+		HttpClient httpClient = httClientBuilder
+				.setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build())
+	    		.setConnectionManager(cm).build();
+	    cm.setMaxTotal(200); // Increase max total connection to 200
+	    cm.setDefaultMaxPerRoute(20); // Increase default max connection per route to 20
 
-                @Override
-                public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
-                }
+	    return httpClient;
+	}
 
-                @Override
-                public boolean verify(String s, SSLSession sslSession) {
-                    return true;
-                }
-            }
-            );
+	private static SSLConnectionSocketFactory createAcceptSelfSignedSocketFactory()
+			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+		// Use the TrustSelfSignedStrategy to allow Self Signed Certificates
+        SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(new TrustSelfSignedStrategy()).build();
 
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-            registry.register(new Scheme("https", 443, sf));
-            ClientConnectionManager ccm = new SingleClientConnManager(registry);
-            return new DefaultHttpClient(ccm);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+        // We can optionally disable hostname verification. 
+        // If you don't want to further weaken the security, you don't have to include this.
+        HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
+
+        // Create an SSL Socket Factory to use the SSLContext with the trust self signed certificate strategy
+        // and allow all hosts verifier.
+        SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
+
+        return connectionFactory;
+	}
+
 }
