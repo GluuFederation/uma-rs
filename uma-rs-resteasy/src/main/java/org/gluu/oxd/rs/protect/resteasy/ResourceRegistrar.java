@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.ClientResponseFailure;
 import org.gluu.oxauth.model.uma.JsonLogicNodeParser;
 import org.gluu.oxauth.model.uma.UmaResource;
 import org.gluu.oxauth.model.uma.UmaResourceResponse;
@@ -103,7 +102,7 @@ public class ResourceRegistrar {
                 LOG.debug("Registered resource, path: " + key.getPath() + ", http methods: " + condition.getHttpMethods() + ", id: " + resourceResponse.getId());
             }
 
-        } catch (ClientResponseFailure ex) {
+        } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
             throw ex;
         }
