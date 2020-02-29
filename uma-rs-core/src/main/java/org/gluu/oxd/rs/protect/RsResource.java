@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Yuriy Zabrovarnyygit
+ * @author Yuriy Zabrovarnyy
  * @version 0.9, 24/12/2015
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
