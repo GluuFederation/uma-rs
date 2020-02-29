@@ -91,6 +91,15 @@ public class ResourceRegistrar {
                 } else {
                     resource.setScopes(condition.getScopes());
                 }
+                //set creation and expiration timestamp
+                if (safeToInt(rsResource.getIat()) && safeToInt(rsResource.getExp())) {
+                    if(rsResource.getExp() > rsResource.getIat()){
+                        resource.setIat(rsResource.getIat());
+                        resource.setExp(rsResource.getExp());
+                    }else{
+                        LOG.warn("Incorrect resource creation and expiration timestamp. Timestamp not set.");
+                    }
+                }
 
                 UmaResourceResponse resourceResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resource);
 
@@ -133,5 +142,12 @@ public class ResourceRegistrar {
 
     public Map<Key, String> getIdMapCopy() {
         return Maps.newHashMap(idMap);
+    }
+
+    public static boolean safeToInt(Integer input) {
+        if (input != null && input > 0) {
+            return true;
+        }
+        return false;
     }
 }
