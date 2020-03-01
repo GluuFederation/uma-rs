@@ -92,14 +92,12 @@ public class ResourceRegistrar {
                     resource.setScopes(condition.getScopes());
                 }
                 //set creation and expiration timestamp
-                if (isSafeToInt(rsResource.getIat()) && isSafeToInt(rsResource.getExp())) {
-                    if (rsResource.getExp() > rsResource.getIat()) {
-                        resource.setIat(rsResource.getIat());
-                        resource.setExp(rsResource.getExp());
-                    } else {
-                        LOG.warn("Creation timestamp greater than expiration timestamp. Creation timestamp will be set by AS.");
-                        resource.setExp(rsResource.getExp());
-                    }
+                if (isSafeToInt(rsResource.getIat())) {
+                    resource.setIat(rsResource.getIat());
+                }
+
+                if (isSafeToInt(rsResource.getExp())) {
+                    resource.setExp(rsResource.getExp());
                 }
 
                 UmaResourceResponse resourceResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resource);
@@ -146,6 +144,6 @@ public class ResourceRegistrar {
     }
 
     public static boolean isSafeToInt(Integer input) {
-        return (input != null && input > 0);
+        return input != null && input > 0;
     }
 }
