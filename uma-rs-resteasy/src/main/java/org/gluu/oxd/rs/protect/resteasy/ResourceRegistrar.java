@@ -92,12 +92,13 @@ public class ResourceRegistrar {
                     resource.setScopes(condition.getScopes());
                 }
                 //set creation and expiration timestamp
-                if (safeToInt(rsResource.getIat()) && safeToInt(rsResource.getExp())) {
-                    if(rsResource.getExp() > rsResource.getIat()){
+                if (isSafeToInt(rsResource.getIat()) && isSafeToInt(rsResource.getExp())) {
+                    if (rsResource.getExp() > rsResource.getIat()) {
                         resource.setIat(rsResource.getIat());
                         resource.setExp(rsResource.getExp());
-                    }else{
-                        LOG.warn("Incorrect resource creation and expiration timestamp. Timestamp not set.");
+                    } else {
+                        LOG.warn("Creation timestamp greater than expiration timestamp. Creation timestamp will be set by AS.");
+                        resource.setExp(rsResource.getExp());
                     }
                 }
 
@@ -144,10 +145,7 @@ public class ResourceRegistrar {
         return Maps.newHashMap(idMap);
     }
 
-    public static boolean safeToInt(Integer input) {
-        if (input != null && input > 0) {
-            return true;
-        }
-        return false;
+    public static boolean isSafeToInt(Integer input) {
+        return (input != null && input > 0);
     }
 }
