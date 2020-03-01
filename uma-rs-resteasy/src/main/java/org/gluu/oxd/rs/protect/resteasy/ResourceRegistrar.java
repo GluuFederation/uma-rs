@@ -91,6 +91,14 @@ public class ResourceRegistrar {
                 } else {
                     resource.setScopes(condition.getScopes());
                 }
+                //set creation and expiration timestamp
+                if (isSafeToInt(rsResource.getIat())) {
+                    resource.setIat(rsResource.getIat());
+                }
+
+                if (isSafeToInt(rsResource.getExp())) {
+                    resource.setExp(rsResource.getExp());
+                }
 
                 UmaResourceResponse resourceResponse = serviceProvider.getResourceService().addResource("Bearer " + patProvider.getPatToken(), resource);
 
@@ -133,5 +141,9 @@ public class ResourceRegistrar {
 
     public Map<Key, String> getIdMapCopy() {
         return Maps.newHashMap(idMap);
+    }
+
+    public static boolean isSafeToInt(Integer input) {
+        return input != null && input > 0;
     }
 }
