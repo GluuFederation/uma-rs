@@ -28,7 +28,7 @@ import org.gluu.oxauth.client.uma.UmaTokenService;
 import org.gluu.oxauth.model.uma.UmaMetadata;
 import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -68,7 +68,7 @@ public class ServiceProvider {
 
     public ServiceProvider(String opHost, HttpClient httpClient) {
         this.opHost = opHost;
-        this.engine = new ApacheHttpClient4Engine(httpClient);
+        this.engine = new ApacheHttpClient43Engine(httpClient);
         this.executor = new ApacheHttpClient4Executor(httpClient);
     }
 
