@@ -1,27 +1,29 @@
 package org.gluu.oxd.rs.protect.resteasy;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import java.util.List;
+
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.core.ResourceMethodInvoker;
-import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.specimpl.BuiltResponse;
-import org.jboss.resteasy.spi.Failure;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 import org.gluu.oxauth.model.uma.PermissionTicket;
 import org.gluu.oxauth.model.uma.RptIntrospectionResponse;
 import org.gluu.oxauth.model.uma.UmaPermission;
 import org.gluu.oxauth.model.uma.UmaPermissionList;
 import org.gluu.oxd.rs.protect.Jackson;
 import org.gluu.util.StringHelper;
+import org.jboss.resteasy.core.ResourceMethodInvoker;
+import org.jboss.resteasy.core.ServerResponse;
+import org.jboss.resteasy.specimpl.BuiltResponse;
+import org.jboss.resteasy.spi.Failure;
+import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -71,8 +73,8 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            if (e instanceof ClientResponseFailure) {
-                LOG.error("Entity: " + ((((ClientResponseFailure) e).getResponse()).getEntity(String.class)));
+            if (e instanceof ClientErrorException) {
+                LOG.error("Entity: " + ((((ClientErrorException) e).getResponse()).readEntity(String.class)));
             }
             return new ServerResponse((BuiltResponse) Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build());
         }
@@ -196,8 +198,8 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
             } else {
                 LOG.error("Failed to register permission ticket. Response is null.");
             }
-        } catch (ClientResponseFailure e) {
-            LOG.debug("Failed to register ticket. Entity: " + e.getResponse().getEntity(String.class) + ", status: " + e.getResponse().getStatus(), e);
+        } catch (ClientErrorException e) {
+            LOG.debug("Failed to register ticket. Entity: " + e.getResponse().readEntity(String.class) + ", status: " + e.getResponse().getStatus(), e);
             if (e.getResponse().getStatus() == 400 || e.getResponse().getStatus() == 401) {
                 LOG.debug("Try maybe PAT is lost on AS, force refresh PAT and request ticket again ...");
                 patProvider.clearPat();

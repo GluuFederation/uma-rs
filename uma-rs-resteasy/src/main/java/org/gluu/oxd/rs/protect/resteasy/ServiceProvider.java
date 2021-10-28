@@ -26,8 +26,6 @@ import org.gluu.oxauth.client.uma.UmaResourceService;
 import org.gluu.oxauth.client.uma.UmaRptIntrospectionService;
 import org.gluu.oxauth.client.uma.UmaTokenService;
 import org.gluu.oxauth.model.uma.UmaMetadata;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
-import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 
 /**
@@ -42,8 +40,7 @@ public class ServiceProvider {
 
     private final String opHost;
 
-    private ClientHttpEngine engine;
-	private ApacheHttpClient4Executor executor;
+    private ApacheHttpClient43Engine engine;
 
     private UmaMetadata umaMetadata = null;
 	private UmaTokenService tokenService;
@@ -69,7 +66,6 @@ public class ServiceProvider {
     public ServiceProvider(String opHost, HttpClient httpClient) {
         this.opHost = opHost;
         this.engine = new ApacheHttpClient43Engine(httpClient);
-        this.executor = new ApacheHttpClient4Executor(httpClient);
     }
 
     public synchronized UmaRptIntrospectionService getRptIntrospectionService() {
@@ -129,8 +125,8 @@ public class ServiceProvider {
         return opHost;
     }
 
-	public ApacheHttpClient4Executor getClientExecutor() {
-		return executor;
+	public ApacheHttpClient43Engine getClientEngone() {
+		return engine;
 	}
 
 	private static HttpClient createClient() {
