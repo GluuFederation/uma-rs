@@ -20,7 +20,6 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.specimpl.BuiltResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -30,7 +29,7 @@ import com.google.common.base.Strings;
  * @version 0.9, 18/04/2016
  */
 
-public class RptPreProcessInterceptor implements PreProcessInterceptor {
+public class RptPreProcessInterceptor {
 
     private static final Logger LOG = Logger.getLogger(RptPreProcessInterceptor.class);
 
@@ -48,7 +47,6 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
         this.serviceProvider = resourceRegistrar.getServiceProvider();
     }
 
-    @Override
     public ServerResponse preProcess(HttpRequest request, ResourceMethodInvoker invoker) throws Failure, WebApplicationException {
 
         String path = getPath(request);
@@ -211,7 +209,6 @@ public class RptPreProcessInterceptor implements PreProcessInterceptor {
                 throw e;
             }
         } catch (Exception e) {
-
             LOG.error("Failed to register permission ticket.", e);
         }
         return Response.status(Response.Status.FORBIDDEN)
