@@ -1,6 +1,5 @@
 package org.gluu.oxd.rs.protect.resteasy;
 
-import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.gluu.oxauth.client.TokenClient;
 import org.gluu.oxauth.client.TokenResponse;
@@ -8,6 +7,8 @@ import org.gluu.oxauth.model.uma.UmaMetadata;
 import org.gluu.oxauth.model.uma.UmaScopeType;
 import org.gluu.oxauth.model.uma.wrapper.Token;
 import org.gluu.oxauth.model.util.Util;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author Yuriy Zabrovarnyy
@@ -72,7 +73,7 @@ public class ObtainPatProvider implements PatProvider {
         }
 
         TokenClient tokenClient = new TokenClient(tokenUrl);
-        tokenClient.setExecutor(serviceProvider.getClientEngone());
+        tokenClient.setExecutor(serviceProvider.getClientEngine());
         TokenResponse response = tokenClient.execClientCredentialsGrant(scope, umaClientId, umaClientSecret);
 
         if (response.getStatus() == 200) {
