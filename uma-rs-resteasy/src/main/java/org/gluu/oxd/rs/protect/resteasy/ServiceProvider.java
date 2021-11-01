@@ -125,7 +125,7 @@ public class ServiceProvider {
         return opHost;
     }
 
-	public ApacheHttpClient43Engine getClientEngone() {
+	public ApacheHttpClient43Engine getClientEngine() {
 		return engine;
 	}
 
