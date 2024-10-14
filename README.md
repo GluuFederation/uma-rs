@@ -1,3 +1,4 @@
+# Moved to [Gluu4 monorepo](https://github.com/GluuFederation/gluu4/tree/main/uma-rs)
 # uma-rs
 UMA Resource Server library - helps to easily protect Java based project with UMA in declarative way.
 
